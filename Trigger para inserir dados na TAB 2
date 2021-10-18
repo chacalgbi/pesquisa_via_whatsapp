@@ -1,0 +1,11 @@
+DELIMITER $
+CREATE TRIGGER Tgr_pesquisa_NPS_Update AFTER update
+ON pesquisa_chat
+FOR EACH ROW
+BEGIN
+ if (NEW.comentario IS NOT NULL && NEW.comen_resp IS NULL) THEN 
+  INSERT INTO resultado_chat (nome, cel, perfil, idchat, hora_perg, pergunta, resposta, hora_resp, comentario, comen_resp, hora_come, tentativas, finalizado, usuario)
+  VALUES(NEW.nome, NEW.cel, NEW.perfil, NEW.idchat, CURRENT_TIMESTAMP, NEW.pergunta, NEW.resposta, NEW.hora_resp, NEW.comentario, NEW.comen_resp, NEW.hora_come, NEW.tentativas, NEW.finalizado, NEW.usuario);
+ END IF;
+END$
+DELIMITER ;

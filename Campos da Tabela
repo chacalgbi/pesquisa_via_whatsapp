@@ -1,0 +1,33 @@
+TABELA PESQUISA_SATISFACAO
+
+-id          // Auto incremento
+-nome        // Nome do cliente
+-cel         // vindo da requisição
+-perfil      // Perfil do cliente (Corporativo, Gamer, etc...)
+-idchat      // id do chat do WhatzApp
+-hora_perg   // hora da pergunta
+-pergunta    // Corpo da mensagem da pergunta
+-resposta    // Numero de 0 a 10
+-hora_resp   // hora da resposta
+-comentario  // Comentário sobre a nota
+-hora_come   // Hora que o cliente enviou o comentario.
+-tentativas  // Numero de tentativas "0" é default
+-Finalizado  // SIM para caso tenha concluído tudo. NAO será default
+-usuario     // Quem enviou a pergunta
+
+TABELA ERROS_PESQUISA
+-id
+-nome
+-cel
+-perfil
+-data_hora
+-erro
+
+
+
+Como você avalia a internet da Micks?
+Por favor, responda APENAS com um número de 0 a 10.
+
+
+Envia a primeira pergunta:
+ - Caso receba uma mensagem coerente (0-10, zero-dez)

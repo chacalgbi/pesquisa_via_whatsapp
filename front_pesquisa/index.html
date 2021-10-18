@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<title>LOGIN | Pesquisa NPS</title>
+	<meta charset="UTF-8">
+	<meta name="robots" content="noindex">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon/micks-favico-32x32-1.png">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+	<script src="https://kit.fontawesome.com/a81368914c.js"></script>
+	<link rel="stylesheet" type="text/css" href="assets/css/style-login.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+<body>
+	<img class="wave" src="assets/img/wave.png">
+	<div class="container">
+		<div class="img">
+			<img src="assets/img/pesquisa02.svg">
+		</div>
+		<div class="login-content">
+			<div  id="formLogin">
+				<img src="assets/img/avatar_micks.png">
+				<h4 id="msg" class="title">Login Pesquisa NPS</h4>
+           		<div class="input-div one">
+           		   <div class="i">
+           		   		<i class="fas fa-user"></i>
+           		   </div>
+           		   <div class="div">
+           		   		<h5>Usuário</h5>
+           		   		<input type="text" id="usuario" class="input">
+           		   </div>
+           		</div>
+           		<div class="input-div pass">
+           		   <div class="i"> 
+           		    	<i class="fas fa-lock"></i>
+           		   </div>
+           		   <div class="div">
+           		    	<h5>Senha</h5>
+           		    	<input type="password" id="password" class="input">
+            	   </div>
+            	</div>
+            	<button type="submit" onclick="login()" class="btn btn-primary">Login</button>
+            </div>
+        </div>
+    </div>   
+    <script src="assets/js/main-focus.js"></script>
+	<script src="assets/js/login.js"></script>
+</body>
+</html>
