@@ -194,6 +194,7 @@ if(login != 'OK'){
           </tr>`
         }
         document.getElementById('corpo').innerHTML = table;
+        $('#tabela').DataTable();
       }
     })
     .catch(function (error) {

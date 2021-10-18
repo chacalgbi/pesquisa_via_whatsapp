@@ -1,7 +1,6 @@
 var login = sessionStorage.login;
 const ip = sessionStorage.ip;
 
-
 function sair(){
   sessionStorage.login = 'NOT';
   sessionStorage.ip = '...';
@@ -42,6 +41,7 @@ if(login != 'OK'){
           </tr>`
         }
         document.getElementById('corpo').innerHTML = table;
+        $('#tabela').DataTable();
       }
     })
     .catch(function (error) {

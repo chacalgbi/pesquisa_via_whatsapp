@@ -64,4 +64,11 @@ routes.post('/pegar_perfis', validarLogin, Zap.pegar_perfis);
 routes.post('/todos_perfis', validarLogin, Zap.todos_perfis);
 routes.post('/perfis_selecionados', validarLogin, Zap.perfis_selecionados);
 
+//Clientes
+routes.post('/cadastrar_cliente',  validarLogin, Zap.cadastrar_cliente);
+routes.post('/editar_cliente',     validarLogin, Zap.editar_cliente);
+routes.post('/deletar_cliente',    validarLogin, Zap.deletar_cliente);
+routes.post('/listar_clientes',    validarLogin, Zap.listar_clientes);
+routes.get('/mostrar_cliente/:id', Zap.mostrar_cliente);
+
 module.exports = routes;

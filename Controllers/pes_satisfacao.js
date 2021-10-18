@@ -695,6 +695,156 @@ class Zap{
         });
     }
 
+    //Cadastrar Clientes
+    async cadastrar_cliente(req, res){
+        console.log(dataHora(),"Cadastrando Cliente");
+        const nome = req.body.nome;
+        const cod_cliente = req.body.cod_cliente;
+        const perfil = req.body.perfil;
+        const cidade = req.body.cidade;
+        const cel = req.body.cel;
+        const email = req.body.email;
+        const zap_valido = req.body.zap_valido;
+        const aceita_pesquisa = req.body.aceita_pesquisa;
+
+        const sql = `INSERT INTO clientes (nome, cod_cliente, perfil, cidade, cel, email, zap_valido, aceita_pesquisa) values ("${nome}", "${cod_cliente}", "${perfil}", "${cidade}", "${cel}", "${email}", "${zap_valido}", "${aceita_pesquisa}");`
+        await con_api.query(sql, function (err, result, fields) {
+            if (err){
+                console.log(dataHora(),"Erro ao cadastrar Cliente no BD");
+                return res.status(200).json({
+                    error: true,
+                    code: 404,
+                    msg: "Erro ao cadastrar Cliente no BD",
+                    err: err
+                });
+            }else{
+                console.log(dataHora(),'Cliente Gravado com sucesso');
+                return res.status(200).json({
+                    error: "nao",
+                    code: 200,
+                    msg: "Cliente Gravado com sucesso"
+                });
+    
+            }
+        });
+    }
+
+    //Editar Clientes
+    async editar_cliente(req, res){
+        console.log(dataHora(),"Editando Cliente");
+        const id = req.body.id;
+        const nome = req.body.nome;
+        const cod_cliente = req.body.cod_cliente;
+        const perfil = req.body.perfil;
+        const cidade = req.body.cidade;
+        const cel = req.body.cel;
+        const email = req.body.email;
+        const zap_valido = req.body.zap_valido;
+        const aceita_pesquisa = req.body.aceita_pesquisa;
+
+        const sql2 = `UPDATE clientes SET nome='${nome}', cod_cliente='${cod_cliente}', perfil='${perfil}', cidade='${cidade}', cel='${cel}', email='${email}', zap_valido='${zap_valido}', aceita_pesquisa='${aceita_pesquisa}' WHERE id='${id}';`;       
+        await con_api.query(sql2, function (err, result, fields) {
+            if (err){
+                console.log(dataHora(),"Erro ao editar Cliente no BD");
+                return res.status(200).json({
+                    error: true,
+                    code: 404,
+                    msg: "Erro ao editar Cliente no BD",
+                    err: err
+                });
+            }else{
+                console.log(dataHora(),'Cliente Editado com sucesso');
+                return res.status(200).json({
+                    error: "nao",
+                    code: 200,
+                    msg: "Cliente Editado com sucesso",
+                    result: result
+                });
+    
+            }
+        });
+    }
+
+    //Deletar Cliente
+    async deletar_cliente(req, res){
+        const id = req.body.id;
+        console.log(dataHora(),"Deletando Cliente");
+        let sql = `DELETE FROM clientes WHERE id=${id}`;
+        await con_api.query(sql, function (erro, resultado, parametros) {
+            if (erro){
+                console.log(dataHora(),"Erro ao deletar cliente", erro);
+                return res.status(200).json({
+                    error: "sim",
+                    code: 404,
+                    msg: "Erro ao deletar cliente",
+                    error, erro
+                });
+            }else{
+                console.log(dataHora(),"Cliente deletado");
+                var resposta = JSON.parse(JSON.stringify(resultado));
+                return res.status(200).json({
+                    error: "nao",
+                    code: 200,
+                    msg: "Cliente deletado",
+                    resposta : resposta
+                });
+            }
+        });
+    }
+
+    //Listar Clientes
+    async listar_clientes(req, res){
+        console.log(dataHora(),"Listando Clientes");
+        const sql = req.body.sql;
+        await con_api.query(sql, function (err, result, fields) {
+            if (err){
+                console.log(dataHora(),"Erro ao listar Clientes no BD");
+                return res.status(200).json({
+                    error: "sim",
+                    code: 404,
+                    msg: "Erro ao listar Clientes no BD",
+                    err: err
+                });
+            }else{
+                console.log(dataHora(),'Sucesso ao listar Clientes');
+                const resposta = JSON.parse(JSON.stringify(result));
+                return res.status(200).json({
+                    error: "nao",
+                    code: 200,
+                    msg: "Sucesso ao listar Clientes",
+                    resposta: resposta
+                });
+            }
+        });
+    }
+
+    //Mostrar Cliente
+    async mostrar_cliente(req, res){
+        const id = req.params.id;
+        console.log(dataHora(),"Mostrando Cliente");
+        const sql = `SELECT * FROM clientes WHERE id = ${id};`;
+        await con_api.query(sql, function (err, result, fields) {
+            if (err){
+                console.log(dataHora(),"Erro ao listar Cliente no BD");
+                return res.status(200).json({
+                    error: "sim",
+                    code: 404,
+                    msg: "Erro ao listar Cliente no BD",
+                    err: err
+                });
+            }else{
+                console.log(dataHora(),'Sucesso ao listar Cliente');
+                const resposta = JSON.parse(JSON.stringify(result));
+                return res.status(200).json({
+                    error: "nao",
+                    code: 200,
+                    msg: "Sucesso ao listar Cliente",
+                    resposta: resposta
+                });
+            }
+        });
+    }
+
 }
 
 module.exports = new Zap();
