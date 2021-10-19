@@ -1,6 +1,8 @@
 var login = sessionStorage.login;
 const ip = sessionStorage.ip;
 
+$("#header").load("menu.html");
+
 $('#editarModal').on('show.bs.modal', function (event) {
   var button = $(event.relatedTarget);
   var id = button.data('id');
@@ -189,8 +191,8 @@ if(login != 'OK'){
           <td>${response.data.resposta[index].topico}</td>
           <td>${response.data.resposta[index].pergunta}</td>
           <td>${response.data.resposta[index].data_hora}</td>
-          <td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editarModal" data-id="${response.data.resposta[index].id}" data-topico="${response.data.resposta[index].topico}" data-pergunta="${response.data.resposta[index].pergunta}">Editar</button></td>
-          <td><button class="btn btn-danger" onclick="apagar(${response.data.resposta[index].id})">Apagar</button></td>
+          <td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editarModal" data-id="${response.data.resposta[index].id}" data-topico="${response.data.resposta[index].topico}" data-pergunta="${response.data.resposta[index].pergunta}" title="Editar pergunta"><i class='bx bx-edit-alt'></i></button></td>
+          <td><button class="btn btn-danger" title="Apagar Registro" onclick="apagar(${response.data.resposta[index].id})"><i class='bx bx-message-square-x'></i></button></td>
           </tr>`
         }
         document.getElementById('corpo').innerHTML = table;

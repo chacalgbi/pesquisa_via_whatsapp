@@ -23,66 +23,9 @@
       <link rel="stylesheet" href="./assets/red/radar.css">
   </head>
 <body>
-  <div class="sidebar close">
-    <div class="logo-details">
-      <i class='bx bxl-medium-square'></i>
-      <span class="logo_name">Micks T.</span>
-    </div>
-
-    <ul class="nav-links">
-      <li><!-- Dashboard -->
-        <a href="lista.html">
-          <i class='bx bx-grid-alt' ></i>
-          <span class="link_name">Inicio</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link_name" href="lista.html">Inicio</a></li>
-        </ul>
-      </li><!-- Dashboard -->
-
-      <li><!-- Materiais -->
-        <div class="iocn-link">
-          <a href="lista.html">
-            <i class='bx bx-collection'></i>
-            <span class="link_name" >Menu</span>
-          </a>
-          <i class='bx bxs-chevron-down arrow' ></i>
-        </div>
-        <ul class="sub-menu">
-          <li><a class="link_name" href="#">Menu</a></li>
-          <li><a href="clientes.html">Clientes</a></li>
-          <li><a href="enviar.html">Enviar Pesquisa</a></li>
-          <li><a href="perguntas.html">Perguntas</a></li>
-        </ul>
-      </li><!-- Materiais -->
-
-      <li> <!-- Setting -->
-        <a href="" onclick="sair()">
-          <i class='bx bx-log-out' ></i>
-          <span class="link_name">Sair</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link_name" href="" onclick="sair()">Sair</a></li>
-        </ul>
-      </li> <!-- Setting -->
-
-      <li><!-- Fim Menu -->
-        <div class="profile-details">
-          <div class="profile-content">
-            <img src="assets/img/avatar_micks.png" alt="profile">
-          </div>
-          <div class="name-job">
-            <div class="profile_name"></div>
-            <div class="job"></div>
-          </div>
-            <a class="nav-link" href="" onclick="sair()">
-              <i class='bx bx-log-out' ></i>
-            </a>
-        </div>
-      </li>
-    </ul>
-  </div>
-
+  
+  <div id="header" class="sidebar close"></div><!-- Menu -->
+  
   <section class="home-section">
     <div class="home-content">
       <i class='bx bx-menu' ></i>
@@ -92,7 +35,7 @@
 
   <div class="home-section">
     <div class="container-fluid">
-      <h1 class="h3 mb-2 text-gray-800" id="msg">Enviar pesquisa</h1>
+      <h1 class="h3 mb-2 text-gray-800" id="msg"><i class='bx bxl-telegram'></i> Enviar pesquisa</h1>
       <div class="card shadow mb-4">
         <div class="card-header py-3">
           <div class="card-body">
@@ -107,7 +50,7 @@
               </div>
               <div class="grafico col-sm-5">
               </br>
-                <button type="submit" onclick="Enviar()" class="btn btn-success">Enviar Pesquisa!</button></br>
+                <button type="submit" onclick="Enviar()" class="btn btn-success">Enviar Pesquisa!  <i class='bx bxs-message-rounded-check'></i></button></br>
                 <span id="total_progress">Progresso do Envio: </span>
                 <div class="progress"><div class="progress-bar progress-bar-striped bg-success progress-bar-animated" id="progress_parcial" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>
                 </br>

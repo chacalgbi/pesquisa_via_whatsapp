@@ -228,11 +228,11 @@ function enviaPesquisa(numero2, pergunta, nome){
 }
 
 //Grava na Tabela que foi enviada a pergunta
-function gravaPergunta(nome, numero1, perfil, chatId, pergunta, usuario){
+function gravaPergunta(id_pesquisa, nome, numero1, perfil, chatId, pergunta, usuario){
     return new Promise((resolve ,reject)=>{
         if(sucesso == true){
-            let sql = `INSERT INTO pesquisa_chat (nome, cel, perfil, idchat, pergunta, usuario) values
-            ("${nome}", "${numero1}", "${perfil}", "${chatId}", "${pergunta}", "${usuario}")`;
+            let sql = `INSERT INTO pesquisa_chat (id_pesquisa, nome, cel, perfil, idchat, pergunta, usuario) values
+            ("${id_pesquisa}", "${nome}", "${numero1}", "${perfil}", "${chatId}", "${pergunta}", "${usuario}")`;
             con_api.query(sql, function (erro, resultado, parametros) {
                 if (erro){
                     reject(erro);
@@ -250,6 +250,7 @@ class Zap{
         sucesso = false;
         repetido = true;
         chatId = "";
+        var id_pesquisa = String(req.body.id_pesquisa);
         var nome     = String(req.body.nome);
         var usuario  = String(req.body.usuario);
         var perfil   = String(req.body.perfil);
@@ -295,7 +296,7 @@ class Zap{
                 });
             });
 
-        await gravaPergunta(nome, numero1, perfil, chatId, pergunta, usuario).then(()=>{
+        await gravaPergunta(id_pesquisa, nome, numero1, perfil, chatId, pergunta, usuario).then(()=>{
             console.log(dataHora(),'Enviado e Gravado com sucesso');
                 return res.status(200).json({
                     error: "nao",
@@ -591,7 +592,7 @@ class Zap{
     //Pegar perfis
     async pegar_perfis(req, res){
         console.log(dataHora(),"Listando Perfis");
-        const sql = "SELECT perfil FROM clientes GROUP BY perfil;";
+        const sql = "SELECT * FROM perfis ORDER BY perfil;";
         await con_api.query(sql, function (err, result, fields) {
             if (err){
                 console.log(dataHora(),"Erro ao listar Perfis no BD");

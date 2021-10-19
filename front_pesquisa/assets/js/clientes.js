@@ -1,9 +1,13 @@
 var login = sessionStorage.login;
 const ip = sessionStorage.ip;
 
-$(document).ready( function () {
+$("#header").load("menu.html");
+
+$(document).ready( function ($) {
   listar_perfis();
   iniciar();
+  listar_perfis_cadastrar();
+  $('#cadastrar_celular').mask('(00) 00000-0000');
 } );
 
 $('#editarModal').on('show.bs.modal', function (event) {
@@ -22,12 +26,27 @@ $('#editarModal').on('show.bs.modal', function (event) {
   modal.find('#editar_id').html(id);
   modal.find('#editar_nome').val(nome);
   modal.find('#editar_cod_cli').val(cod_cli);
-  modal.find('#editar_perfil').val(perfil);
-  modal.find('#editar_cidade').val(cidade);
   modal.find('#editar_celular').val(celular);
   modal.find('#editar_email').val(email);
-  modal.find('#editar_zap_valido').val(zap_valido);
-  modal.find('#editar_aceita_pesquisa').val(aceita_pesquisa);
+
+  listar_perfis1(perfil); //modal.find('#editar_perfil').val(perfil); // está sendo inserido na função listar_perfis
+
+  let cidade1 = `<option value="${cidade}">${cidade}</option>
+                <option value="Guanambi">Guanambi</option>
+                <option value="Bom Jesus da Lapa">Bom Jesus da Lapa</option>
+                <option value="Pindai">Pindai</option>
+                <option value="Candiba">Candiba</option>`;
+  document.getElementById('editar_cidade').innerHTML = cidade1;
+
+  let zap = `<option selected value="${zap_valido}">${zap_valido}</option>
+             <option value="sim">sim</option>
+             <option value="nao">nao</option>`;
+  document.getElementById('editar_zap_valido').innerHTML = zap;
+
+  let pes = `<option selected value="${aceita_pesquisa}">${aceita_pesquisa}</option>
+             <option value="sim">sim</option>
+             <option value="nao">nao</option>`;
+  document.getElementById('editar_aceita_pesquisa').innerHTML = pes;
 })
 
 function sair(){
@@ -39,21 +58,33 @@ function sair(){
 }
 
 function cadastrar(){
-  const topico = document.getElementById("cadastrar_topico").value;
-  const pergunta = document.getElementById("cadastrar_msg").value;
+  const nome = document.getElementById("cadastrar_nome").value;
+  const cod_cliente = document.getElementById("cadastrar_cod_cli").value;
+  const perfil = document.getElementById("cadastrar_perfil").value;
+  const cidade = document.getElementById("cadastrar_cidade").value;
+  const cel = document.getElementById("cadastrar_celular").value;
+  const email = document.getElementById("cadastrar_email").value;
+  const zap_valido = document.getElementById("cadastrar_zap_valido").value;
+  const aceita_pesquisa = document.getElementById("cadastrar_aceita_pesquisa").value;
 
-  if(topico.length < 5 || pergunta.length < 15){
+  if(nome.length < 5 || perfil.length < 5){
     Swal.fire(
       'Aviso',
       'Preencha todos os campos corretamente',
       'warning'
     );
   }else{
-    axios.post(`${ip}cadastrar_pergunta`, {
+    axios.post(`${ip}cadastrar_cliente`, {
       usuario: sessionStorage.usuario,
       senha: sessionStorage.senha,
-      topico: topico,
-      pergunta: pergunta
+      nome: nome,
+      cod_cliente: cod_cliente,
+      perfil: perfil,
+      cidade: cidade,
+      cel: cel,
+      email: email,
+      zap_valido: zap_valido,
+      aceita_pesquisa: aceita_pesquisa
     }).then(function (response) {
         console.log(response.data);
         if(response.data.error == 'sim' || response.data.error == true){
@@ -61,7 +92,7 @@ function cadastrar(){
             icon: 'error',
             title: 'Oops...',
             text: 'Algo deu errado',
-            footer: '<a href="perguntas.html">Voltar para a lista de perguntas</a>'
+            footer: '<a href="clientes.html">Voltar para a lista de clientes</a>'
           });
         }else{
           Swal.fire({
@@ -72,7 +103,7 @@ function cadastrar(){
             timer: 1500
           });
           setTimeout(function() {
-            location.replace("perguntas.html");
+            location.replace("clientes.html");
           }, 1600);
         }
       })
@@ -232,8 +263,8 @@ function iniciar(){
             data-email="${response.data.resposta[index].email}" 
             data-zap_valido="${response.data.resposta[index].zap_valido}"
             data-aceita_pesquisa="${response.data.resposta[index].aceita_pesquisa}"
-            >Editar</button></td>
-            <td><button class="btn btn-danger" onclick="apagar(${response.data.resposta[index].id})">Apagar</button></td>
+            title="Editar Cliente"><i class='bx bx-edit-alt'></i></button></td>
+            <td><button class="btn btn-danger" title="Apagar Registro" onclick="apagar(${response.data.resposta[index].id})"><i class='bx bx-message-square-x'></i></button></td>
             </tr>`
           }
           document.getElementById('corpo').innerHTML = table;
@@ -266,7 +297,7 @@ function listar_perfis(){
       perfis = perfis + `<option value="SELECT * FROM clientes c WHERE CHAR_LENGTH(c.cel) < 9;">Números de Celular Inválidos</option>`;
       //console.log(response.data.resposta);
       response.data.resposta.map((item, index)=>{
-        perfis = perfis + `<option value="SELECT * FROM clientes WHERE perfil='${item.perfil}';"> Filtrar por perfil ${item.perfil}</option>`
+        perfis = perfis + `<option value="SELECT * FROM clientes WHERE perfil='${item.perfil}';">${item.perfil}</option>`
     });
     document.getElementById('selecionar_listagem').innerHTML = perfis;
       
@@ -320,6 +351,57 @@ function listar_por(item){
       document.getElementById('corpo').innerHTML = table;
       document.getElementById('qtd_clientes').innerHTML = `${response.data.resposta.length} Registros encontrados.`;
       $('#tabela2').DataTable();
+    }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
+function listar_perfis_cadastrar(){
+  axios.post(`${ip}pegar_perfis`, {
+    usuario: sessionStorage.usuario,
+    senha: sessionStorage.senha
+  }).then(function (response) {
+    if(response.data.error == 'sim' || response.data.error == true){
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Parece que você não tem permissão para isso'
+      });
+    }else{
+      let perfis2 = '<option disabled selected>Selecione um perfil</option>';
+      response.data.resposta.map((item, index)=>{
+        perfis2 = perfis2 + `<option value="${item.perfil}">${item.perfil}</option>`
+      });
+    document.getElementById('cadastrar_perfil').innerHTML = perfis2;
+      
+    }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
+function listar_perfis1(perfil){
+  axios.post(`${ip}pegar_perfis`, {
+    usuario: sessionStorage.usuario,
+    senha: sessionStorage.senha
+  }).then(function (response) {
+    if(response.data.error == 'sim' || response.data.error == true){
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Parece que você não tem permissão para isso'
+      });
+    }else{
+      perfis = `<option selected value="${perfil}">${perfil}</option>`;
+      //console.log(response.data.resposta);
+      response.data.resposta.map((item, index)=>{
+        perfis = perfis + `<option value="${item.perfil}">${item.perfil}</option>`
+    });
+    document.getElementById('editar_perfil').innerHTML = perfis;
+      
     }
   })
   .catch(function (error) {

@@ -6,6 +6,9 @@ var num_pesquisas = 0;
 var total = 100;
 var enviados = 50;
 var listaClientes = [];
+var id_pesq = 0;
+
+$("#header").load("menu.html");
 
 function sair(){
   sessionStorage.login = 'NOT';
@@ -95,6 +98,20 @@ function selecionar_perfis(){
 }
 
 async function chamar(){
+  await gravar_pesquisas_enviadas().then((res)=>{
+    console.log(res.data.msg);
+  }).catch((erro)=>{
+      console.log(erro);
+  });
+
+  await pegar_ultima_pesquisa().then((res)=>{
+      console.log("Pesquisa número: ",res.data.resposta[0].id);
+      id_pesq = res.data.resposta[0].id;
+  }).catch((erro)=>{
+      console.log("Entrou no catch ",erro);
+      id_pesq = 0;
+  });
+
   await getTodos();
 }
 
@@ -118,6 +135,36 @@ function confirmar_enviar(qtd){
   })
 }
 
+function pegar_ultima_pesquisa(){
+  let sql = "SELECT MAX(id) AS id FROM pesquisas_enviadas;";
+  return new Promise((resolve,reject)=>{
+    axios.post(`${ip}listar_clientes`, {
+      usuario: sessionStorage.usuario,
+      senha: sessionStorage.senha,
+      sql: sql
+    }).then( function (response) { resolve(response);
+    }).catch(function (error)    { reject(error); });
+  });
+
+}
+
+function gravar_pesquisas_enviadas(){
+  let perfis = selecionar_perfis();
+  let pergunta = document.getElementById('visualizar_pergunta').value;
+  let topico = $('#selecionar_pergunta :selected').text();
+
+  return new Promise((resolve,reject)=>{
+    axios.post(`${ip}cadastrar_pesquisas`, {
+      usuario: sessionStorage.usuario,
+      senha: sessionStorage.senha,
+      topico: topico,
+      pergunta: pergunta,
+      perfis: perfis
+    }).then( function (response) { resolve(response);
+    }).catch(function (error)    { reject(error); });
+  });
+}
+
 function enviando_pesquisa(item){
   let perg = document.getElementById('visualizar_pergunta').value;
   const formatado = item.cel.replace(/\D+/g, "");
@@ -125,6 +172,7 @@ function enviando_pesquisa(item){
     axios.post(`${ip}enviar`, {
       usuario: sessionStorage.usuario,
       senha: sessionStorage.senha,
+      id_pesquisa: id_pesq,
       nome: item.nome,
       perfil: item.perfil,
       numero: formatado,
@@ -142,6 +190,18 @@ async function getTodos() {
       let parcial = parseInt((100 * (index+1)) / num_pesquisas);
       $('#progress_parcial').css('width', parcial+'%').attr('aria-valuenow', parcial).html(`${parcial}%`);
   }
+
+  Swal.fire({
+    position: 'top-end',
+    icon: 'success',
+    title: 'Envio Finalizado!',
+    showConfirmButton: false,
+    timer: 2000
+  });
+  setTimeout(function() {
+    location.replace("lista.html");
+  }, 2500);
+
 }
 
 function exibir_clientes(clientes){
