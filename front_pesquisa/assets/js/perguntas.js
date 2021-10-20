@@ -1,8 +1,6 @@
 var login = sessionStorage.login;
 const ip = sessionStorage.ip;
 
-$("#header").load("menu.html");
-
 $('#editarModal').on('show.bs.modal', function (event) {
   var button = $(event.relatedTarget);
   var id = button.data('id');

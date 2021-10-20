@@ -1,8 +1,6 @@
 var login = sessionStorage.login;
 const ip = sessionStorage.ip;
 
-$("#header").load("menu.html");
-
 function sair(){
   sessionStorage.login = 'NOT';
   sessionStorage.ip = '...';

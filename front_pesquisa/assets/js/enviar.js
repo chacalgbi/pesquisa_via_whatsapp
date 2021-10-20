@@ -8,8 +8,6 @@ var enviados = 50;
 var listaClientes = [];
 var id_pesq = 0;
 
-$("#header").load("menu.html");
-
 function sair(){
   sessionStorage.login = 'NOT';
   sessionStorage.ip = '...';

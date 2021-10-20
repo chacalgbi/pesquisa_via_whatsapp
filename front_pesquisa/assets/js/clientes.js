@@ -1,8 +1,6 @@
 var login = sessionStorage.login;
 const ip = sessionStorage.ip;
 
-$("#header").load("menu.html");
-
 $(document).ready( function ($) {
   listar_perfis();
   iniciar();
@@ -67,7 +65,7 @@ function cadastrar(){
   const zap_valido = document.getElementById("cadastrar_zap_valido").value;
   const aceita_pesquisa = document.getElementById("cadastrar_aceita_pesquisa").value;
 
-  if(nome.length < 5 || perfil.length < 5){
+  if(nome.length < 4){
     Swal.fire(
       'Aviso',
       'Preencha todos os campos corretamente',
@@ -241,7 +239,7 @@ function iniciar(){
             title: 'Oops...',
             text: 'Parece que você não tem permissão para isso'
           });
-        }else{;
+        }else{
           var table = "";
           for (let index = 0; index < response.data.resposta.length; index++){
             table = table + `<tr>
@@ -344,8 +342,8 @@ function listar_por(item){
             data-email="${response.data.resposta[index].email}" 
             data-zap_valido="${response.data.resposta[index].zap_valido}"
             data-aceita_pesquisa="${response.data.resposta[index].aceita_pesquisa}"
-            >Editar</button></td>
-        <td><button class="btn btn-danger" onclick="apagar(${response.data.resposta[index].id})">Apagar</button></td>
+            title="Editar Cliente"><i class='bx bx-edit-alt'></i></button></td>
+        <td><button class="btn btn-danger" title="Apagar Registro" onclick="apagar(${response.data.resposta[index].id})"><i class='bx bx-message-square-x'></i></button></td>
         </tr>`
       }
       document.getElementById('corpo').innerHTML = table;

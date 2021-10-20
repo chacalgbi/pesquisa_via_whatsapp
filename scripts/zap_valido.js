@@ -25,7 +25,6 @@ function clientes(){
     });
 }
 
-
 function testarNumeros(item){
     return new Promise((resolve,reject)=>{
         const formatado = item.celular.replace(/\D+/g, "");
@@ -74,7 +73,7 @@ async function getTodos() {
     console.log("Numeros Validos: ", numerosValidos);
     console.log("Numeros Invalidos: ", numerosInvalidos);
     process.exit(0);
-  }
+}
 
 async function usar(){
     await clientes().then((res)=>{

@@ -25,7 +25,38 @@
       <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
   </head>
 <body>
-  <div id="header" class="sidebar close"></div><!-- Menu -->
+  <div id="header" class="sidebar close">
+    <div class="logo-details"><i class='bx bxl-medium-square'></i><span class="logo_name">Micks T.</span></div>
+<ul class="nav-links">
+  <li>
+    <a href="lista.html"><i class='bx bx-search-alt'></i><span class="link_name">Pesquisas</span></a>
+    <ul class="sub-menu blank"><li><a class="link_name" href="lista.html">Pesquisas</a></li></ul>
+  </li>
+  <li>
+    <a href="clientes.html"><i class='bx bx-angry'></i><span class="link_name">Clientes</span></a>
+    <ul class="sub-menu blank"><li><a class="link_name" href="clientes.html">Clientes</a></li></ul>
+  </li>
+  <li>
+    <a href="enviar.html"><i class='bx bx-mail-send'></i><span class="link_name">Enviar Pesquisa</span></a>
+    <ul class="sub-menu blank"><li><a class="link_name" href="enviar.html">Enviar Pesquisa</a></li></ul>
+  </li>
+  <li>
+    <a href="perguntas.html"><i class='bx bx-question-mark'></i><span class="link_name">Perguntas</span></a>
+    <ul class="sub-menu blank"><li><a class="link_name" href="perguntas.html">Perguntas</a></li></ul>
+  </li>
+  <li>
+    <a href="grafico.html"><i class='bx bx-line-chart'></i><span class="link_name">Gráfico</span></a>
+    <ul class="sub-menu blank"><li><a class="link_name" href="perguntas.html">Gráfico</a></li></ul>
+  </li>
+  <li>
+    <a href="" onclick="sair()"><i class='bx bx-log-out' ></i><span class="link_name">Sair</span></a>
+    <ul class="sub-menu blank"><li><a class="link_name" href="" onclick="sair()">Sair</a></li></ul>
+  </li>
+  <li>
+    <div class="profile-details"><div class="profile-content"><img src="assets/img/avatar_micks.png" alt="profile"></div></div>
+  </li>
+</ul>
+  </div><!-- Menu -->
 
   <section class="home-section">
     <div class="home-content">
@@ -36,19 +67,76 @@
 
   <div class="home-section">
     <div class="container-fluid">
-      <h1 class="h3 mb-2 text-gray-800" id="msg"><i class='bx bx-line-chart'></i> Gráfico de Progresso</h1>
+      <div class="row">
+        <div class="col-sm-4">
+          <h2 class="h3 mb-2 text-gray-800" id="msg"><i class='bx bx-line-chart'></i> Gráfico de Progresso</h2>    
+        </div>
+        <div class="col-sm-5">
+          <select class="form-control" onchange="listar_pesquisas(this)" id="selecionar_pesquisa"></select>
+        </div>
+        <div class="col-sm-3">
+          <button type="button" id="abrir_relatorio" class="btn btn-primary" data-toggle="modal" data-target="#relatorioModal" title="Mostra detalhes das notas dos clientes" ><i class='bx bx-user-voice'>  Relatório por NOTA</i></button>
+        </div>
+      </div>
       <div class="card shadow mb-4">
         <div class="card-header py-3">
           <div class="card-body">
-            Grafico
+            <canvas id="grafico"></canvas>
           </div>
         </div>
       </div>
+
+
+      <div class="modal fade bd-example-modal-lg" id="relatorioModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="row">
+              <div class="col-sm-4">
+                <select id="selecionar_notas" onchange="listar_notas(this)">
+                  <option selected disabled>Selecione uma Nota</option>
+                  <option value="1">Nota 01</option>
+                  <option value="2">Nota 02</option>
+                  <option value="3">Nota 03</option>
+                  <option value="4">Nota 04</option>
+                  <option value="5">Nota 05</option>
+                  <option value="6">Nota 06</option>
+                  <option value="7">Nota 07</option>
+                  <option value="8">Nota 08</option>
+                  <option value="9">Nota 09</option>
+                  <option value="10">Nota 10</option>
+                </select>
+              </div>
+              <div class="col-sm-8">
+                <h5 id="pesquisa_atual">Pesquisa X</h5>
+              </div>             
+            </div>
+            
+            <table id="tabela" class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Nome</th>
+                  <th scope="col">Cel</th>
+                  <th scope="col">Perfil</th>
+                  <th scope="col">Nota</th>
+                  <th scope="col">Comentário</th>
+                </tr>
+              </thead>
+              <tbody id="corpo">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+
     </div>
   </div>
 
+
+
   <script src="assets/js/menu_drop_down_Sidebar.js"></script> 
   <script src="assets/js/data_tables.js"></script>
-  <script src="assets/js/lista.js"></script>
+  <script src="assets/js/grafico.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
