@@ -9,6 +9,30 @@ function sair(){
   location.replace("index.html");
 }
 
+function pesquisas_feitas_no_dia(){
+  let sql = "SELECT COUNT(*) AS total FROM resultado_chat WHERE DATE(hora_resp) = CURRENT_DATE();";
+  axios.post(`${ip}listar_clientes`, {
+    usuario: sessionStorage.usuario,
+    senha: sessionStorage.senha,
+    sql: sql
+  })
+  .then(function (response) {
+      $.notify(`Você tem ${response.data.resposta[0].total} pesquisas respondidas hoje!`, {
+        autoHideDelay: 8000,
+        clickToHide: true,
+        autoHide: true,
+        className: 'info',
+        showDuration: 1000,
+        hideDuration: 1000,
+        gap: 2
+      });
+      
+  })
+  .catch(function (error) {
+      console.log(error);
+  });
+}
+
 if(login != 'OK'){
     document.getElementById('msg').innerHTML = "Acesso não autorizado";
     setTimeout(function() {
@@ -49,3 +73,5 @@ if(login != 'OK'){
     });
 
 }
+
+pesquisas_feitas_no_dia();

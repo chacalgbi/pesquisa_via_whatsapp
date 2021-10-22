@@ -1,4 +1,6 @@
 sessionStorage.ip = 'http://localhost:3366/';
+//sessionStorage.ip = 'http://172.17.1.163:3366/';
+
 
 function login(){
     const ip = sessionStorage.ip;
@@ -20,13 +22,14 @@ function login(){
             sessionStorage.login = 'NOT';
             swal("Erro!", "Dados inválidos!", "error");
             }else{
+                $.notify(`Bem-Vindo ${login}`, "success");
                 sessionStorage.usuario = login; 
                 sessionStorage.senha = senha; 
                 sessionStorage.login = 'OK';       
                 document.getElementById('msg').innerHTML = response.data.msg;
                 setTimeout(function() { // delay de 1 segundo
                     location.replace("lista.html");
-                }, 1000);
+                }, 2000);
             }
             
         })

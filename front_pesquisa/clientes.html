@@ -19,7 +19,7 @@
       <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script src="./assets/pace.js"></script>
-      <link rel="stylesheet" href="./assets/red/radar.css">
+      <link rel="stylesheet" href="radar.css">
       <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css"/>
   </head>
 <body>
@@ -146,7 +146,7 @@
                   <div class="col-5">
                     <div class="form-group">
                       <label for="message-text" class="col-form-label">Celular:</label>
-                      <input class="form-control" id="cadastrar_celular">
+                      <input class="form-control" onblur="validarWhatsApp(this.value);" id="cadastrar_celular">
                     </div>
                   </div>
                   <div class="col-7">
@@ -279,5 +279,6 @@
   <script src="assets/js/menu_drop_down_Sidebar.js"></script> 
   <script src="assets/js/clientes.js"></script>
   <script src="assets/js/jquery-mask.js"></script>
+  <script src="assets/js/notify.js"></script>
 </body>
 </html>

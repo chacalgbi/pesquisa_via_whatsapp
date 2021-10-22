@@ -113,6 +113,50 @@ function cadastrar(){
  
 }
 
+function validarWhatsApp(item){
+  const formatado = item.replace(/\D+/g, "");
+  axios.post(`${ip}existe`, {
+    usuario: sessionStorage.usuario,
+    senha: sessionStorage.senha,
+    numero: formatado
+  }).then(function (response) {
+    if(response.data.pode_receber_mensagens){
+      $("#cadastrar_celular").notify(
+        `Este número: ${item}, é um WhatsApp VÁLIDO!`,
+        { 
+          className: 'success',
+          position:"top center",
+          arrowShow: true,
+          arrowSize: 15
+        }
+      );
+    }
+    else{
+      $("#cadastrar_celular").notify(
+        `Este número: ${item}, é um WhatsApp INVÁLIDO!`,
+        { 
+          className: 'error',
+          position:"top center",
+          arrowShow: true,
+          arrowSize: 15
+        }
+      );
+    }
+
+  })
+  .catch(function (error) {
+    $("#cadastrar_celular").notify(
+      `NÃO FOI POSSÍVEL FAZER A VERIFICAÇÃO DO NÚMERO`,
+      { 
+        className: 'error',
+        position:"top center",
+        arrowShow: true,
+        arrowSize: 15
+      }
+    );
+  });
+}
+
 function editar(){
   const editar_id = document.getElementById("editar_id").innerHTML;
   const editar_nome = document.getElementById("editar_nome").value;
