@@ -5,7 +5,7 @@
       <!-- Não indexa página-->
       <meta name="robots" content="noindex">
       <meta charset="UTF-8">
-      <title>Listar Pesquisas NPS</title>
+      <title>Inserir Clientes</title>
       <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon/micks-favico-32x32-1.png">
       <link rel="stylesheet" href="assets/css/style-menu.css">
       <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -21,10 +21,9 @@
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script src="./assets/pace.js"></script>
       <link rel="stylesheet" href="radar.css">
-      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css"/>
-      <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
   </head>
 <body>
+  
   <div id="header" class="sidebar close">
     <div class="logo-details"><i class='bx bxl-medium-square'></i><span class="logo_name">Micks T.</span></div>
 <ul class="nav-links">
@@ -57,7 +56,7 @@
   </li>
 </ul>
   </div><!-- Menu -->
-
+  
   <section class="home-section">
     <div class="home-content">
       <i class='bx bx-menu' ></i>
@@ -67,76 +66,45 @@
 
   <div class="home-section">
     <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-4">
-          <h2 class="h3 mb-2 text-gray-800" id="msg"><i class='bx bx-line-chart'></i> Gráfico de Progresso</h2>    
-        </div>
-        <div class="col-sm-5">
-          <select class="form-control" onchange="listar_pesquisas(this)" id="selecionar_pesquisa"></select>
-        </div>
-        <div class="col-sm-3">
-          <button type="button" id="abrir_relatorio" class="btn btn-primary" data-toggle="modal" data-target="#relatorioModal" title="Mostra detalhes das notas dos clientes" ><i class='bx bx-user-voice'>  Relatório por NOTA</i></button>
-        </div>
-      </div>
+      <h1 class="h3 mb-2 text-gray-800" id="msg"><i class='bx bxl-telegram'></i> Inserir Clientes</h1>
       <div class="card shadow mb-4">
         <div class="card-header py-3">
           <div class="card-body">
-            <canvas id="grafico"></canvas>
-          </div>
-        </div>
-      </div>
 
-
-      <div class="modal fade bd-example-modal-lg" id="relatorioModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="row">
-              <div class="col-sm-4">
-                <select id="selecionar_notas" onchange="listar_notas(this)">
-                  <option selected disabled>Selecione uma Nota</option>
-                  <option value="1">Nota 01</option>
-                  <option value="2">Nota 02</option>
-                  <option value="3">Nota 03</option>
-                  <option value="4">Nota 04</option>
-                  <option value="5">Nota 05</option>
-                  <option value="6">Nota 06</option>
-                  <option value="7">Nota 07</option>
-                  <option value="8">Nota 08</option>
-                  <option value="9">Nota 09</option>
-                  <option value="10">Nota 10</option>
-                </select>
+            <form id="myForm" accept-charset="utf-8">
+              <div class="row selecionar_csv">
+                <div class="col-sm-7">
+                  <input type="file" id="csvFile" accept=".csv" />
+                </div>
+                <div class="col-sm-5">
+                  <input type="submit" class="btn btn-outline-secondary" value="Abrir Arquivo" />
+                </div>
               </div>
-              <div class="col-sm-8">
-                <h5 id="pesquisa_atual">Pesquisa X</h5>
-              </div>             
-            </div>
-            
+            </form>
+
+            <hr>
+            <button type="submit" style="display: none" id="btn_verificar" onclick="Verificar_ZAP_CSV()" class="btn btn-outline-danger">...</button>
             <table id="tabela" class="table table-hover">
               <thead>
                 <tr>
+                  <th scope="col">#</th>
                   <th scope="col">Nome</th>
-                  <th scope="col">Cel</th>
-                  <th scope="col">Perfil</th>
-                  <th scope="col">Nota</th>
-                  <th scope="col">Comentário</th>
+                  <th scope="col">Celular</th>
+                  <th scope="col">WhatsApp ?</th>
                 </tr>
               </thead>
               <tbody id="corpo">
               </tbody>
             </table>
+
           </div>
         </div>
       </div>
-
-
     </div>
   </div>
 
-
-
   <script src="assets/js/menu_drop_down_Sidebar.js"></script> 
   <script src="assets/js/data_tables.js"></script>
-  <script src="assets/js/grafico.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="assets/js/por_periodo.js"></script>
 </body>
 </html>

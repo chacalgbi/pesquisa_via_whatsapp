@@ -9,6 +9,9 @@ $(document).ready( function ($) {
 } );
 
 $('#editarModal').on('show.bs.modal', function (event) {
+  document.getElementById('foto_cliente').src = "no_image.jpg";
+  document.getElementById('link_cliente').href = "https://www.google.com.br/";
+
   var button = $(event.relatedTarget);
   var id = button.data('id');
   var nome = button.data('nome');
@@ -45,6 +48,9 @@ $('#editarModal').on('show.bs.modal', function (event) {
              <option value="sim">sim</option>
              <option value="nao">nao</option>`;
   document.getElementById('editar_aceita_pesquisa').innerHTML = pes;
+
+  fotoCliente(celular);
+
 })
 
 function sair(){
@@ -113,6 +119,50 @@ function cadastrar(){
  
 }
 
+function validarWhatsAppEdit(item){
+  const formatado = item.replace(/\D+/g, "");
+  axios.post(`${ip}existe`, {
+    usuario: sessionStorage.usuario,
+    senha: sessionStorage.senha,
+    numero: formatado
+  }).then(function (response) {
+    if(response.data.pode_receber_mensagens){
+      $("#editar_celular").notify(
+        `Este número: ${item}, é um WhatsApp VÁLIDO!`,
+        { 
+          className: 'success',
+          position:"top center",
+          arrowShow: true,
+          arrowSize: 15
+        }
+      );
+    }
+    else{
+      $("#editar_celular").notify(
+        `Este número: ${item}, é um WhatsApp INVÁLIDO!`,
+        { 
+          className: 'error',
+          position:"top center",
+          arrowShow: true,
+          arrowSize: 15
+        }
+      );
+    }
+
+  })
+  .catch(function (error) {
+    $("#editar_celular").notify(
+      `NÃO FOI POSSÍVEL FAZER A VERIFICAÇÃO DO NÚMERO`,
+      { 
+        className: 'error',
+        position:"top center",
+        arrowShow: true,
+        arrowSize: 15
+      }
+    );
+  });
+}
+
 function validarWhatsApp(item){
   const formatado = item.replace(/\D+/g, "");
   axios.post(`${ip}existe`, {
@@ -147,6 +197,32 @@ function validarWhatsApp(item){
   .catch(function (error) {
     $("#cadastrar_celular").notify(
       `NÃO FOI POSSÍVEL FAZER A VERIFICAÇÃO DO NÚMERO`,
+      { 
+        className: 'error',
+        position:"top center",
+        arrowShow: true,
+        arrowSize: 15
+      }
+    );
+  });
+}
+
+function fotoCliente(item){
+  const formatado = item.replace(/\D+/g, "");
+  axios.post(`${ip}profile`, {
+    usuario: sessionStorage.usuario,
+    senha: sessionStorage.senha,
+    numero: formatado
+  }).then(function (response) {
+    if(response.data.foto){
+      //console.log(response.data.foto);
+      document.getElementById('foto_cliente').src = response.data.foto;
+      document.getElementById('link_cliente').href = response.data.foto;
+    }
+  })
+  .catch(function (error) {
+    $("#foto_cliente").notify(
+      `NÃO FOI POSSÍVEL RECUPERAR A FOTO.`,
       { 
         className: 'error',
         position:"top center",

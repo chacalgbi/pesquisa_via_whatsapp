@@ -47,6 +47,7 @@ routes.post('/online', validarLogin, Zap.online);
 routes.post('/existe', validarLogin, Zap.existe);
 routes.post('/link',   validarLogin, Zap.link);
 routes.post('/local',  validarLogin, Zap.localizacao);
+routes.post('/profile', validarLogin, Zap.profile);
 
 //FrontEnd Perguntas
 routes.post('/cadastrar_pergunta', validarLogin, Zap.cadastrar_pergunta);
@@ -63,12 +64,16 @@ routes.post('/cadastrar_pesquisas', validarLogin, Zap.cadastrar_pesquisas);
 routes.post('/pegar_perfis', validarLogin, Zap.pegar_perfis);
 routes.post('/todos_perfis', validarLogin, Zap.todos_perfis);
 routes.post('/perfis_selecionados', validarLogin, Zap.perfis_selecionados);
+routes.post('/datas', validarLogin, Zap.datas);
 
 //Clientes
 routes.post('/cadastrar_cliente',  validarLogin, Zap.cadastrar_cliente);
 routes.post('/editar_cliente',     validarLogin, Zap.editar_cliente);
 routes.post('/deletar_cliente',    validarLogin, Zap.deletar_cliente);
 routes.post('/listar_clientes',    validarLogin, Zap.listar_clientes);
+routes.post('/listar_periodo',     validarLogin, Zap.listar_periodo);
+routes.post('/listar_ids',         validarLogin, Zap.listar_ids);
+routes.post('/existe_numero',      validarLogin, Zap.existe_numero);
 routes.get('/mostrar_cliente/:id', Zap.mostrar_cliente);
 
 module.exports = routes;

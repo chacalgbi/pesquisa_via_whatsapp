@@ -10,7 +10,7 @@ console.log(dataHora(),'Iniciando script de verificacao de numero valido de What
 
 function clientes(){
     return new Promise((resolve,reject)=>{
-        const cli = 'SELECT id, TRIM(cel) AS celular FROM clientes;'; //  WHERE perfil= "Testes DEV MICKS"
+        const cli = 'SELECT id, TRIM(cel) AS celular FROM clientes WHERE perfil= "Geral";'; //  WHERE perfil= "Geral"
         con_api.query(cli, function (erro, result, fields){
             if (erro){
                 console.log(dataHora(),erro);

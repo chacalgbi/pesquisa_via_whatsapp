@@ -45,7 +45,7 @@ async function enviarLink(numero, link, descricao){
 
 // Responder  Mensagem
 venom.create(
-    'Pesquisa',
+    'DESENVOLVIMENTO',
     undefined,
     (statusSession, session) => {
       console.log(dataHora(),'Status Session: ', statusSession);
@@ -418,6 +418,32 @@ class Zap{
         
     }
 
+    async profile(req, res){
+        let n = req.body.numero;
+        if(req.body.numero.length == 11){
+            if(req.body.numero.indexOf('9') == 2){
+               n = req.body.numero.replace('9', '');
+            }
+        }
+
+        const numero = String("55" + n + "@c.us");
+        console.log(dataHora(), "Obtendo Profile: ", numero);
+        await clientEnvio.getProfilePicFromServer(numero)
+        .then((result) => {
+            console.log(dataHora(),"Link do Profile: ", result);
+            return res.status(200).json({
+                error: "nao",
+                foto: result
+            });
+        }).catch((erro) => {
+            console.log(dataHora(), erro);
+            return res.status(200).json({
+                error: "sim",
+                code: erro
+            });
+        });
+    }
+
 
     //Login na Página
     async login(req, res) {
@@ -645,8 +671,13 @@ class Zap{
 
     //Buscar todos os clientes para enviar pesquisa
     async todos_perfis(req, res){
+        let dias = req.body.dias;
         console.log(dataHora(),"Listando Todos os Clientes");
-        const sql = "SELECT nome, cel, perfil FROM clientes WHERE zap_valido='sim' AND aceita_pesquisa='sim';";
+
+        const sql = `SELECT nome, cel, perfil, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM clientes 
+        WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias} OR ultima_pesquisa IS NULL 
+        AND zap_valido='sim' AND aceita_pesquisa='sim';`;
+
         await con_api.query(sql, function (err, result, fields) {
             if (err){
                 console.log(dataHora(),"Erro ao listar Todos os Clientes no BD");
@@ -672,8 +703,13 @@ class Zap{
     //Buscar clientes por PERFIL para enviar pesquisa
     async perfis_selecionados(req, res){
         let selecionados = req.body.perfis;
+        let dias = req.body.dias;
         console.log(dataHora(),"Listando Clientes por Perfil");
-        const sql = `SELECT nome, cel, perfil FROM clientes WHERE zap_valido='sim' AND aceita_pesquisa='sim' AND perfil IN (${selecionados});`;
+
+        const sql = `SELECT nome, cel, perfil, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM 
+        clientes WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias} OR ultima_pesquisa IS NULL AND 
+        zap_valido='sim' AND aceita_pesquisa='sim' AND perfil IN (${selecionados});`;
+
         await con_api.query(sql, function (err, result, fields) {
             if (err){
                 console.log(dataHora(),"Erro ao listar Clientes por Perfil no BD");
@@ -690,6 +726,44 @@ class Zap{
                     error: "nao",
                     code: 200,
                     msg: "Sucesso ao listar Clientes por Perfil",
+                    resposta: resposta
+                });
+            }
+        });
+    }
+
+    //Buscar clientes por data de venda.
+    async datas(req, res){
+        let inicio = req.body.inicio;
+        let fim = req.body.fim;
+        let dias = req.body.dias;
+        console.log(dataHora(),"Listando Clientes por Data de Venda");
+
+        const sql1 = `SELECT nome, cel, perfil, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM clientes 
+        WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias} OR ultima_pesquisa IS NULL AND zap_valido='sim' 
+        AND aceita_pesquisa='sim' AND data_venda BETWEEN DATE('${inicio}') AND DATE('${fim}');`;
+
+        //Sem IS NULL (para testes) # OR ultima_pesquisa IS NULL
+        const sql2 = `SELECT nome, cel, perfil, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM clientes 
+        WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias} AND zap_valido='sim' 
+        AND aceita_pesquisa='sim' AND data_venda BETWEEN DATE('${inicio}') AND DATE('${fim}');`;
+
+        await con_api.query(sql2, function (err, result, fields) {
+            if (err){
+                console.log(dataHora(),"Erro ao listar Clientes por Data de Venda no BD");
+                return res.status(200).json({
+                    error: "sim",
+                    code: 404,
+                    msg: "Erro ao listar Clientes por Data de Venda no BD",
+                    err: err
+                });
+            }else{
+                console.log(dataHora(),'Sucesso ao listar Clientes por Data de Venda');
+                const resposta = JSON.parse(JSON.stringify(result));
+                return res.status(200).json({
+                    error: "nao",
+                    code: 200,
+                    msg: "Sucesso ao listar Clientes por Data de Venda",
                     resposta: resposta
                 });
             }
@@ -819,6 +893,60 @@ class Zap{
         });
     }
 
+    //Listar Clientes por periodo
+    async listar_periodo(req, res){
+        const dias = req.body.dias;
+        console.log(dataHora(),"Listando Clientes por período");
+        //const sql1 = `SELECT *, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM clientes WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias} OR ultima_pesquisa IS NULL AND zap_valido='sim' AND aceita_pesquisa='sim';`;
+        const sql2 = `SELECT *, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM clientes WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias};`;
+        await con_api.query(sql2, function (err, result, fields) {
+            if (err){
+                console.log(dataHora(),"Erro ao listar Clientes no BD");
+                return res.status(200).json({
+                    error: "sim",
+                    code: 404,
+                    msg: "Erro ao listar Clientes no BD",
+                    err: err
+                });
+            }else{
+                console.log(dataHora(),'Sucesso ao listar Clientes por periodo');
+                const resposta = JSON.parse(JSON.stringify(result));
+                return res.status(200).json({
+                    error: "nao",
+                    code: 200,
+                    msg: "Sucesso ao listar Clientes",
+                    resposta: resposta
+                });
+            }
+        });
+    }
+
+    //Listar IDs de Clientes
+    async listar_ids(req, res){
+        const dias = req.body.dias;
+        console.log(dataHora(),"Listando IDs de Clientes");
+        await con_api.query("SELECT id from clientes;", function (err, result, fields) {
+            if (err){
+                console.log(dataHora(),"Erro ao listar IDs no BD");
+                return res.status(200).json({
+                    error: "sim",
+                    code: 404,
+                    msg: "Erro ao listar IDs no BD",
+                    err: err
+                });
+            }else{
+                console.log(dataHora(),'Sucesso ao listar IDs por periodo');
+                const resposta = JSON.parse(JSON.stringify(result));
+                return res.status(200).json({
+                    error: "nao",
+                    code: 200,
+                    msg: "Sucesso ao listar IDs",
+                    resposta: resposta
+                });
+            }
+        });
+    }
+
     //Mostrar Cliente
     async mostrar_cliente(req, res){
         const id = req.params.id;
@@ -840,6 +968,33 @@ class Zap{
                     error: "nao",
                     code: 200,
                     msg: "Sucesso ao listar Cliente",
+                    resposta: resposta
+                });
+            }
+        });
+    }
+
+    //Verificar se o número existe na Tabela Clientes
+    async existe_numero(req, res){
+        const cel = req.body.numero;
+        console.log(dataHora(),"Verificando Numero");
+        const sql = `SELECT * FROM clientes WHERE cel='${cel}';`;
+        await con_api.query(sql, function (err, result, fields) {
+            if (err){
+                console.log(dataHora(),"Erro ao verificar número na tabela");
+                return res.status(200).json({
+                    error: "sim",
+                    code: 404,
+                    msg: "Erro ao verificar número na tabela",
+                    err: err
+                });
+            }else{
+                console.log(dataHora(),'Sucesso ao verificar número na tabela');
+                const resposta = JSON.parse(JSON.stringify(result));
+                return res.status(200).json({
+                    error: "nao",
+                    code: 200,
+                    msg: "Sucesso ao verificar número na tabela",
                     resposta: resposta
                 });
             }

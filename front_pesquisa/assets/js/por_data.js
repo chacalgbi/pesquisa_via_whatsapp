@@ -7,6 +7,9 @@ var total = 100;
 var enviados = 50;
 var listaClientes = [];
 var id_pesq = 0;
+var dias = 0;
+var data_inicio = '';
+var data_fim = '';
 
 function sair(){
   sessionStorage.login = 'NOT';
@@ -19,7 +22,20 @@ function sair(){
 function inserir_pergunta(){
   let texto = document.getElementById('selecionar_pergunta').value;
   document.getElementById('visualizar_pergunta').value = texto;
+  document.getElementById('dias').style.display = 'block';
+}
+
+function mostrar_checks(){
   document.getElementById('checks').style.display = 'block';
+  document.getElementById('checks1').style.display = 'block';
+  dias = document.getElementById('selecionar_dias').value;
+}
+
+function pegar_datas(){
+  data_inicio = document.getElementById('data_inicio').value;
+  data_fim = document.getElementById('data_fim').value;
+  //console.log("Inicio: ", data_inicio);
+  //console.log("Fim: ", data_fim);
 }
 
 function listar_perguntas(){
@@ -46,53 +62,6 @@ function listar_perguntas(){
   .catch(function (error) {
     console.log(error);
   });
-}
-
-function listar_perfis(){
-  axios.post(`${ip}pegar_perfis`, {
-    usuario: sessionStorage.usuario,
-    senha: sessionStorage.senha
-  }).then(function (response) {
-    if(response.data.error == 'sim' || response.data.error == true){
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Parece que você não tem permissão para isso'
-      });
-    }else{
-      perfis = '<div class="form-check"><input class="form-check-input" onclick="marcar_todos()" type="checkbox" value="Todos" id="Todos">Todos</div>';
-      //console.log(response.data.resposta);
-      response.data.resposta.map((item, index)=>{
-        perfis = perfis + `<div class="form-check"><input class="form-check-input" type="checkbox" value="${item.perfil}" id="${item.perfil}">${item.perfil}</div>`
-    });
-    document.getElementById('checks').innerHTML = perfis;
-      
-    }
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-}
-
-function selecionar_perfis(){
-  var perfis = "";
-  
-  if(document.getElementById("Todos").checked){
-    perfis = "Todos";
-    return perfis;
-  }else{
-    var minhaDiv = document.getElementById("checks");
-    var listaMarcados = minhaDiv.getElementsByTagName("input");
-    for (loop = 0; loop < listaMarcados.length; loop++) {
-      var item = listaMarcados[loop];
-      if (item.type == "checkbox" && item.checked) {
-        perfis = perfis + `'${item.id}',`;
-      }
-    }
-    const str2 = perfis.slice(0, -1);
-    return str2;
-  }
-
 }
 
 async function chamar(){
@@ -189,6 +158,8 @@ async function getTodos() {
       $('#progress_parcial').css('width', parcial+'%').attr('aria-valuenow', parcial).html(`${parcial}%`);
   }
 
+  // Lembrar de colocar aqui o total de numeros que tiveram a pesquisa enviada com sucesso.
+
   Swal.fire({
     position: 'top-end',
     icon: 'success',
@@ -212,43 +183,20 @@ function exibir_clientes(clientes){
 }
 
 function Enviar(){
-  let qtd_perfis = selecionar_perfis();
-  let resultado = '';
-  if(qtd_perfis == ''){
+  if(data_inicio == '' || data_fim == ''){
     Swal.fire({
       icon: 'info',
       title: 'Oops...',
-      text: 'É necessário selecionar algum perfil!'
-    });
-  }else if(qtd_perfis == 'Todos'){
-    resultado = `${ip}todos_perfis`;
-    axios.post(resultado, {
-      usuario: sessionStorage.usuario,
-      senha: sessionStorage.senha
-    }).then(function (response) {
-      if(response.data.error == 'sim' || response.data.error == true){
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Parece que você não tem permissão para isso'
-        });
-      }else{
-        num_pesquisas = response.data.resposta.length;
-        listaClientes = response.data.resposta;
-        exibir_clientes(response.data.resposta);
-        console.log(response.data.resposta);
-        confirmar_enviar(num_pesquisas);
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
+      text: 'É necessário selecionar as datas!'
     });
   }else{
-    resultado = `${ip}perfis_selecionados`;
+    resultado = `${ip}datas`;
     axios.post(resultado, {
       usuario: sessionStorage.usuario,
       senha: sessionStorage.senha,
-      perfis: qtd_perfis
+      inicio: data_inicio,
+      fim: data_fim,
+      dias: dias
     }).then(function (response) {
       if(response.data.error == 'sim' || response.data.error == true){
         Swal.fire({
@@ -267,20 +215,6 @@ function Enviar(){
     .catch(function (error) {
       console.log(error);
     });
-  }
-
-}
-
-function marcar_todos(){
-  var marcado = false;
-  var todos = document.getElementById("Todos");
-  marcado = todos.checked;
-  var minhaDiv = document.getElementById("checks");
-  var listaMarcados = minhaDiv.getElementsByTagName("input");
-
-  for (loop = 0; loop < listaMarcados.length; loop++){
-    var item = listaMarcados[loop];
-    item.checked = marcado;
   }
 
 }
@@ -292,5 +226,4 @@ if(login != 'OK'){
     }, 500);
 }else{
   listar_perguntas();
-  listar_perfis();
 }
