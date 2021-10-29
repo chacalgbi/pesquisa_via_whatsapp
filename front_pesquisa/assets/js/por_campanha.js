@@ -7,159 +7,9 @@ var total = 100;
 var enviados = 50;
 var listaClientes = [];
 var id_pesq = 0;
+var dias = 0;
 
-//CSV
-const myForm = document.getElementById("myForm");
-const csvFile = document.getElementById("csvFile");
-var data_csv = [];
-var clientes_com_zap_validos = [];
-
-function csvToArray(str, delimiter = ",") {
-    const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
-    const rows = str.slice(str.indexOf("\n") + 1).split("\n");
-    const arr = rows.map(function (row) {
-        const values = row.split(delimiter);
-        const el = headers.reduce(function (object, header, index) {
-        object[header] = values[index];
-        return object;
-        }, {});
-        return el;
-    });
-    return arr;
-}
-
-myForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-    const input = csvFile.files[0];
-    if(input){
-      const reader = new FileReader();
-      reader.onload = function (e) {
-          const text = e.target.result;
-          const texto1 = text.replace(/(\"|\r)/g, '');
-          data_csv = csvToArray(texto1);
-          data_csv.pop();
-          //console.log(data_csv);
-          document.getElementById('btn_verificar').innerText = `Verificar Celular de ${data_csv.length} clientes`;
-          document.getElementById('btn_verificar').style.display = 'block'
-      };
-      reader.readAsText(input, "ISO-8859-1");
-    }else{
-      Swal.fire({
-        icon: 'info',
-        title: 'Oops...',
-        text: 'Selecione um arquivo .CSV !'
-      });
-    }
-
-    
-});
-//CSV
-
-//Formata qualquer numero de Celular para o formato (77) 91234-5678
-function formatar_celular(num){
-  let formatado = num.replace(/\D+/g, "");
-  let final = '';
-  if(formatado.length == 11){
-      final = formatado.replace(/(\d{2})?(\d{5})?(\d{4})/, "($1) $2-$3");
-  }else if(formatado.length == 10){
-      final = formatado.replace(/(\d{2})?(\d{4})?(\d{4})/, "($1) 9$2-$3");
-  }else if(formatado.length ==  9){
-      final = formatado.replace(/(\d{5})?(\d{4})/, "(77) $1-$2");
-  }else if(formatado.length ==  8){
-      final = formatado.replace(/(\d{4})?(\d{4})/, "(77) 9$1-$2");
-  }else{
-      final = "erro";
-  }
-  return final;
-}
-
-// Busca na API VENOM se o número é um WhatsApp válido
-function verificar_zap_valido(cel){
-  const formatado = cel.replace(/\D+/g, "");
-  return new Promise((resolve,reject)=>{
-    axios.post(`${ip}existe`, {
-      usuario: sessionStorage.usuario,
-      senha: sessionStorage.senha,
-      numero: formatado
-    }).then( function (response) { resolve(response);
-    }).catch(function (error)    { reject(error); });
-  });
-}
-
-//Faz uma requisição enviando o número do CELULAR, verifica se o número já está na lista de clientes:
-// - Se não existir, faz um INSERT enviando: Nome, cod_cli, perfil=Geral, campanha, celular, email e ultima_pesquisa=NOW()
-// - Se existir , faz um UPDATE atualizando o campo campanha.
-function inserir_ou_atualizar(cliente){
-  let num = formatar_celular(cliente.celular) // coloca no formato que está na tabela cliente antes de comparar
-  return new Promise((resolve,reject)=>{
-    axios.post(`${ip}existe_numero`, {
-      usuario: sessionStorage.usuario,
-      senha: sessionStorage.senha,
-      numero: num
-    }).then(function(response){
-
-      //Se NÃO existir, faz o insert
-      if(response.data.resposta.length == 0){
-        console.log("Não existe na Tabela");
-        resolve("OK");
-      }
-      // Se existir, faz o update
-      else{
-        console.log("Existe na Tabela", response.data.resposta);
-        resolve("OK");
-      }
-    }).catch(function(error){
-      reject(error);
-    });
-
-  });
-}
-
-// Após verificar o número coloca na tabela.
-async function Verificar_ZAP_CSV(){
-  for (const [index, cliente] of data_csv.entries()) {
-    const resposta = await verificar_zap_valido(cliente.celular);
-    if(resposta.data.msg == "WhatsApp OK"){
-      $("#corpo").append(`<tr><td>${index+1}</td><td>${cliente.nome_cliente}</td><td>${cliente.celular}</td><td><img src='./assets/img/ok.jpg' width='40' height='40'></img></td></tr>`);
-      clientes_com_zap_validos.push(cliente);
-
-      //Se o número for um WhatsApp válido, insere ou atualiza na tabela cliente.
-      await inserir_ou_atualizar(cliente);
-    }
-    else{
-      $("#corpo").append(`<tr><td>${index+1}</td><td>${cliente.nome_cliente}</td><td>${cliente.celular}</td><td><img src='./assets/img/erro.jpg' width='40' height='40'></img></td></tr>`);
-    }
-  }
-
-  //console.log(clientes_com_zap_validos);
-  exibir_clientes(clientes_com_zap_validos);
-
-  Swal.fire({
-    position: 'top-end',
-    icon: 'success',
-    title: `${clientes_com_zap_validos.length} clientes tem celular com WhatsApp válidos`,
-    showConfirmButton: false,
-    timer: 4000
-  });
-
-}
-
-function sair(){
-  sessionStorage.login = 'NOT';
-  sessionStorage.ip = '...';
-  sessionStorage.usuario = "...";
-  sessionStorage.senha = "...";
-  location.replace("index.html");
-}
-
-//Insere a pergunta selecionada na caixa de texto
-function inserir_pergunta(){
-  let texto = document.getElementById('selecionar_pergunta').value;
-  document.getElementById('visualizar_pergunta').value = texto;
-  document.getElementById('checks').style.display = 'block';
-}
-
-//Pegar as perguntas da tabela e colocar no Select INPUT
+// 1 - Na inicialização, Pegar as perguntas da tabela e colocar no Select INPUT
 function listar_perguntas(){
   axios.post(`${ip}listar_perguntas`, {
     usuario: sessionStorage.usuario,
@@ -186,23 +36,112 @@ function listar_perguntas(){
   });
 }
 
-// Exibir lista de clientes no TEXTArea
-function exibir_clientes(clientes){
-  let cli = "";
-  clientes.map((item, index)=>{
-    cli = cli + `${item.nome_cliente}, ${item.celular}\n`;
+// 2 - Na inicialização, carrega a lista de campanhas
+function listar_campanhas(){
+  axios.post(`${ip}listar_clientes`, {
+    usuario: sessionStorage.usuario,
+    senha: sessionStorage.senha,
+    sql: "SELECT campanha FROM clientes WHERE campanha IS NOT NULL GROUP BY campanha;"
+  }).then(function (response) {
+    if(response.data.error == 'sim' || response.data.error == true){
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Parece que você não tem permissão para isso'
+      });
+    }else{
+      console.log(response.data.resposta);
+      perfis = "<form>";
+      response.data.resposta.map((item, index)=>{
+        perfis = perfis + `<div class="form-check"><input class="form-check-input" type="radio" name="camp" value="${item.campanha}" id="${item.campanha}">${item.campanha}</div>`
+      });
+      perfis = perfis + "</form><br/><button type='submit' onclick='buscar_clientes_campanha()' class='btn btn-info'>Buscar Clientes</button>";
+      document.getElementById('checks').innerHTML = perfis;
+    }
+  })
+  .catch(function (error) {
+    console.log(error);
   });
+}
 
-  document.getElementById('visualizar_clientes').value = cli;
+// 3 - Insere a pergunta selecionada na caixa de texto
+function inserir_pergunta(){
+  let texto = document.getElementById('selecionar_pergunta').value;
+  document.getElementById('visualizar_pergunta').value = texto;
+  document.getElementById('dias').style.display = 'block';
+}
+
+// 4 - Mostra a lista de campanhas
+function mostrar_checks(){
+  document.getElementById('checks').style.display = 'block';
+  document.getElementById('checks1').style.display = 'block';
+  dias = document.getElementById('selecionar_dias').value;
+  console.log(dias);
+}
+
+// 5 - Busca os clientes baseado na campanha selecionada e fora do tempo de ultima_pesquisa
+function buscar_clientes_campanha(){
+  let marcado = document.querySelector('input[name=camp]:checked').value;
+  axios.post(`${ip}listar_clientes`, {
+    usuario: sessionStorage.usuario,
+    senha: sessionStorage.senha,
+    sql: `SELECT * FROM clientes WHERE campanha ='${marcado}' AND (DATEDIFF(NOW(),ultima_pesquisa) > ${dias} OR ultima_pesquisa IS NULL);`
+  }).then(function (response) {
+    if(response.data.error == 'sim' || response.data.error == true){
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Parece que você não tem permissão para isso'
+      });
+    }else{
+      console.log(response.data.resposta);
+      listaClientes = response.data.resposta;
+      let cli = '';
+      response.data.resposta.map((item, index)=>{
+        cli = cli + `${index+1} - ${item.nome} - ${item.cel}\n`;
+      });
+      document.getElementById('visualizar_clientes').value = cli;
+    }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
+//Formata qualquer numero de Celular para o formato (77) 91234-5678
+function formatar_celular(num){
+  let formatado = num.replace(/\D+/g, "");
+  let final = '';
+  if(formatado.length == 11){
+      final = formatado.replace(/(\d{2})?(\d{5})?(\d{4})/, "($1) $2-$3");
+  }else if(formatado.length == 10){
+      final = formatado.replace(/(\d{2})?(\d{4})?(\d{4})/, "($1) 9$2-$3");
+  }else if(formatado.length ==  9){
+      final = formatado.replace(/(\d{5})?(\d{4})/, "(77) $1-$2");
+  }else if(formatado.length ==  8){
+      final = formatado.replace(/(\d{4})?(\d{4})/, "(77) 9$1-$2");
+  }else{
+      final = "erro";
+  }
+  return final;
+}
+
+function sair(){
+  sessionStorage.login = 'NOT';
+  sessionStorage.ip = '...';
+  sessionStorage.usuario = "...";
+  sessionStorage.senha = "...";
+  location.replace("index.html");
 }
 
 // 1
 function Enviar(){
-  confirmar_enviar(clientes_com_zap_validos.length);
+  confirmar_enviar(listaClientes.length);
 }
 
 //2
 function confirmar_enviar(qtd){
+  num_pesquisas = qtd;
   Swal.fire({
     title: `${sessionStorage.usuario}, tem certeza?`,
     text: `Deseja enviar esta pesquisa para ${qtd} clientes?`,
@@ -274,13 +213,13 @@ function pegar_ultima_pesquisa(){
 
 //6
 async function getTodos() {
-  for (const [index, cliente] of clientes_com_zap_validos.entries()) {
-      const num_existe = await verificar_se_numero_existe(cliente.celular);
-      console.log(num_existe);
-      //const resposta = await enviando_pesquisa(cliente);
-      //console.log(`${index+1} Enviados: `, resposta.data.msg, " - ", cliente);
-      //let parcial = parseInt((100 * (index+1)) / num_pesquisas);
-      //$('#progress_parcial').css('width', parcial+'%').attr('aria-valuenow', parcial).html(`${parcial}%`);
+  for (const [index, cliente] of listaClientes.entries()) {
+      const num_existe = await verificar_se_numero_existe(cliente.cel);
+      console.log(num_existe.data);
+      const resposta = await enviando_pesquisa(cliente);
+      console.log(`${index+1} Enviados: `, resposta.data.msg, " - ", cliente);
+      let parcial = parseInt((100 * (index+1)) / num_pesquisas);
+      $('#progress_parcial').css('width', parcial+'%').attr('aria-valuenow', parcial).html(`${parcial}%`);
   }
 
   Swal.fire({
@@ -288,11 +227,10 @@ async function getTodos() {
     icon: 'success',
     title: 'Envio Finalizado!',
     showConfirmButton: false,
-    timer: 2500
+    timer: 4000
   });
-  setTimeout(function() {
-    location.replace("lista.html");
-  }, 3000);
+
+  //setTimeout(function() { location.replace("lista.html"); }, 5000);
 
 }
 
@@ -334,4 +272,5 @@ if(login != 'OK'){
     }, 500);
 }else{
   listar_perguntas();
+  listar_campanhas();
 }

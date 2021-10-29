@@ -220,9 +220,11 @@ function exibir_clientes(clientes){
 
 function Enviar(){
   let qtd_perfis = selecionar_perfis();
+  console.log(qtd_perfis);
   let resultado = '';
   if(qtd_perfis == ''){
     Swal.fire({
+      position: 'top-end',
       icon: 'info',
       title: 'Oops...',
       text: 'É necessário selecionar algum perfil!'
@@ -236,16 +238,26 @@ function Enviar(){
     }).then(function (response) {
       if(response.data.error == 'sim' || response.data.error == true){
         Swal.fire({
+          position: 'top-end',
           icon: 'error',
           title: 'Oops...',
           text: 'Parece que você não tem permissão para isso'
         });
       }else{
         num_pesquisas = response.data.resposta.length;
-        listaClientes = response.data.resposta;
-        exibir_clientes(response.data.resposta);
-        console.log(response.data.resposta);
-        confirmar_enviar(num_pesquisas);
+        if(num_pesquisas == 0){
+          Swal.fire({
+            position: 'top-end',
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Nenhum cliente atende aos critérios.'
+          });
+        }else{
+          listaClientes = response.data.resposta;
+          exibir_clientes(response.data.resposta);
+          console.log(response.data.resposta);
+          confirmar_enviar(num_pesquisas);
+        }
       }
     })
     .catch(function (error) {
@@ -261,16 +273,26 @@ function Enviar(){
     }).then(function (response) {
       if(response.data.error == 'sim' || response.data.error == true){
         Swal.fire({
+          position: 'top-end',
           icon: 'error',
           title: 'Oops...',
           text: 'Parece que você não tem permissão para isso'
         });
       }else{
         num_pesquisas = response.data.resposta.length;
-        exibir_clientes(response.data.resposta);
-        listaClientes = response.data.resposta;
-        console.log(response.data.resposta);
-        confirmar_enviar(num_pesquisas);
+        if(num_pesquisas == 0){
+          Swal.fire({
+            position: 'top-end',
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Nenhum cliente atende aos critérios.'
+          });
+        }else{
+          exibir_clientes(response.data.resposta);
+          listaClientes = response.data.resposta;
+          console.log(response.data.resposta);
+          confirmar_enviar(num_pesquisas);
+        }
       }
     })
     .catch(function (error) {

@@ -15,6 +15,24 @@ var agradecimento_erro = "A Micks agradece a sua atenção.";
 var msg_padrao= "Olá Bem-Vindo a Micks. Entre em contato conosco atravez do (77)3451-3838";
 var pedir_numero_valido = "Por favor, digite um número válido. De 1 a 10.";
 
+//Formata qualquer numero de Celular para o formato (77) 91234-5678
+function formatar_celular(num){
+    let formatado = num.replace(/\D+/g, "");
+    let final = '';
+    if(formatado.length == 11){
+        final = formatado.replace(/(\d{2})?(\d{5})?(\d{4})/, "($1) $2-$3");
+    }else if(formatado.length == 10){
+        final = formatado.replace(/(\d{2})?(\d{4})?(\d{4})/, "($1) 9$2-$3");
+    }else if(formatado.length ==  9){
+        final = formatado.replace(/(\d{5})?(\d{4})/, "(77) $1-$2");
+    }else if(formatado.length ==  8){
+        final = formatado.replace(/(\d{4})?(\d{4})/, "(77) 9$1-$2");
+    }else{
+        final = "erro";
+    }
+    return final;
+  }
+
 function enviarPergunta(numero, texto){
     clientEnvio.sendText(numero, texto).then((result) => {
         console.log(dataHora(),'MSG Enviada: ',texto);
@@ -45,7 +63,7 @@ async function enviarLink(numero, link, descricao){
 
 // Responder  Mensagem
 venom.create(
-    'DESENVOLVIMENTO',
+    'Devs',
     undefined,
     (statusSession, session) => {
       console.log(dataHora(),'Status Session: ', statusSession);
@@ -223,6 +241,8 @@ function enviaPesquisa(numero2, pergunta, nome){
                 console.log(dataHora(),`Erro: `, erro.status, " - ", erro.text);
                 reject(erro);
             });
+        }else{
+            reject("erro");
         }
     });
 }
@@ -283,7 +303,15 @@ class Zap{
             });
 
         await enviaPesquisa(numero2, pergunta, nome).then(()=>{
-
+            let num = formatar_celular(numero1);
+            const sql_num = `UPDATE clientes SET ultima_pesquisa= NOW() WHERE cel='${num}';`;
+            con_api.query(sql_num, function (erro, resultado, parametros) {
+                if(erro){
+                    console.log(erro);
+                }else{
+                    console.log(dataHora(),"Ultima_Pesquisa atualizada");
+                }
+            });
             }).catch((error)=>{
                 console.log(dataHora(),"Erro ao enviar a pesquisa para o cliente");
                 const sql_erro = `INSERT INTO erros (nome, cel, perfil, erro) values ("${nome}", "${numero1}", "${perfil}", "${error}")`;
@@ -674,7 +702,7 @@ class Zap{
         let dias = req.body.dias;
         console.log(dataHora(),"Listando Todos os Clientes");
 
-        const sql = `SELECT nome, cel, perfil, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM clientes 
+        const sql = `SELECT *, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM clientes 
         WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias} OR ultima_pesquisa IS NULL 
         AND zap_valido='sim' AND aceita_pesquisa='sim';`;
 
@@ -706,9 +734,9 @@ class Zap{
         let dias = req.body.dias;
         console.log(dataHora(),"Listando Clientes por Perfil");
 
-        const sql = `SELECT nome, cel, perfil, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM 
-        clientes WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias} OR ultima_pesquisa IS NULL AND 
-        zap_valido='sim' AND aceita_pesquisa='sim' AND perfil IN (${selecionados});`;
+        const sql = `SELECT * FROM clientes WHERE zap_valido='sim' AND aceita_pesquisa='sim'
+                    AND perfil IN (${selecionados})
+                    AND (DATEDIFF(NOW(),ultima_pesquisa) > ${dias} OR ultima_pesquisa IS NULL);`;
 
         await con_api.query(sql, function (err, result, fields) {
             if (err){
@@ -739,16 +767,13 @@ class Zap{
         let dias = req.body.dias;
         console.log(dataHora(),"Listando Clientes por Data de Venda");
 
-        const sql1 = `SELECT nome, cel, perfil, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM clientes 
-        WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias} OR ultima_pesquisa IS NULL AND zap_valido='sim' 
-        AND aceita_pesquisa='sim' AND data_venda BETWEEN DATE('${inicio}') AND DATE('${fim}');`;
+        const sql1 = `SELECT * FROM clientes WHERE
+                        zap_valido='sim'
+                        AND aceita_pesquisa='sim'
+                        AND (DATEDIFF(NOW(),ultima_pesquisa) > ${dias} OR ultima_pesquisa IS NULL)
+                        AND data_venda BETWEEN DATE('${inicio}') AND DATE('${fim}');`;
 
-        //Sem IS NULL (para testes) # OR ultima_pesquisa IS NULL
-        const sql2 = `SELECT nome, cel, perfil, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM clientes 
-        WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias} AND zap_valido='sim' 
-        AND aceita_pesquisa='sim' AND data_venda BETWEEN DATE('${inicio}') AND DATE('${fim}');`;
-
-        await con_api.query(sql2, function (err, result, fields) {
+        await con_api.query(sql1, function (err, result, fields) {
             if (err){
                 console.log(dataHora(),"Erro ao listar Clientes por Data de Venda no BD");
                 return res.status(200).json({
@@ -897,9 +922,9 @@ class Zap{
     async listar_periodo(req, res){
         const dias = req.body.dias;
         console.log(dataHora(),"Listando Clientes por período");
-        //const sql1 = `SELECT *, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM clientes WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias} OR ultima_pesquisa IS NULL AND zap_valido='sim' AND aceita_pesquisa='sim';`;
+        const sql1 = `SELECT *, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM clientes WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias} OR ultima_pesquisa IS NULL AND zap_valido='sim' AND aceita_pesquisa='sim';`;
         const sql2 = `SELECT *, DATEDIFF(NOW(),ultima_pesquisa) AS periodo FROM clientes WHERE DATEDIFF(NOW(),ultima_pesquisa) > ${dias};`;
-        await con_api.query(sql2, function (err, result, fields) {
+        await con_api.query(sql1, function (err, result, fields) {
             if (err){
                 console.log(dataHora(),"Erro ao listar Clientes no BD");
                 return res.status(200).json({

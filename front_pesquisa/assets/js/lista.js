@@ -33,6 +33,42 @@ function pesquisas_feitas_no_dia(){
   });
 }
 
+// Apaga pesquisas não respondidas a mais de 90 dias na tabela pesquisa_chat.
+function apagar_pesquisas_nao_respondidas(){
+
+  //Verifica se existe registros com pesquisas antigas
+  axios.post(`${ip}listar_clientes`, {
+    usuario: sessionStorage.usuario,
+    senha: sessionStorage.senha,
+    sql: "SELECT * FROM pesquisa_chat WHERE DATEDIFF(NOW(),hora_perg) > 90;"
+  })
+  .then(function (response) {
+      let antigos = response.data.resposta.length;
+      if(antigos > 0){
+
+        // Apaga de fato
+        axios.post(`${ip}listar_clientes`, {
+          usuario: sessionStorage.usuario,
+          senha: sessionStorage.senha,
+          sql: "DELETE FROM pesquisa_chat WHERE DATEDIFF(NOW(),hora_perg) > 90;"
+        })
+        .then(function (response) {
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: `${antigos} registros de pesquisa foram apagados, pois tem mais de 90 dias que não foram respondidos.`,
+            showConfirmButton: false,
+            timer: 8000
+          });
+        }).catch(function (error) { console.log(error); });
+
+      }
+  })
+  .catch(function (error) {
+      console.log(error);
+  });
+}
+
 if(login != 'OK'){
     document.getElementById('msg').innerHTML = "Acesso não autorizado";
     setTimeout(function() {
@@ -75,3 +111,4 @@ if(login != 'OK'){
 }
 
 pesquisas_feitas_no_dia();
+apagar_pesquisas_nao_respondidas();
