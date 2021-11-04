@@ -74,7 +74,25 @@
       <div class="card shadow mb-4">
         <div class="card-header py-3">
           <div class="card-body">
-      
+            <div class="input-group-prepend">
+              <span class="input-group-text">Digite o nome da campanha</span>
+            </div>
+            <input type="text" class="form-control" id="campanha" onkeypress="exibirForm()" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+            <br/><br/>
+
+            <form id="myForm" accept-charset="utf-8" style="display: none">
+              <div class="row selecionar_csv">
+                <div class="col-sm-7">
+                  <input type="file" id="csvFile" accept=".csv" />
+                </div>
+                <div class="col-sm-5">
+                  <input type="submit" class="btn btn-outline-secondary" value="Abrir Arquivo" />
+                </div>
+              </div>
+            </form>
+            <hr>
+            <button type="submit" style="display: none" id="btn_verificar" onclick="Verificar_ZAP_CSV()" class="btn btn-outline-danger">...</button>
+            
             <table id="tabela" class="table table-hover" style="display: none">
               <thead>
                 <tr>

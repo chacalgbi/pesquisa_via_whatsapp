@@ -18,6 +18,7 @@ $(document).ready(function() {
           <td>${response.data.resposta[index].hora_nota}</td>
           <td>${response.data.resposta[index].comen_resp}</td>
           <td>${response.data.resposta[index].hora_com}</td>
+          <td>${response.data.resposta[index].campanha}</td>
           </tr>`
         }
         document.getElementById('corpo').innerHTML = table;

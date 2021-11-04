@@ -2,18 +2,47 @@ var venom = require("venom-bot");
 var request = require('request');
 const dataHora = require('../config/dataHora');
 const con_api = require('../config/conexao_api');
-const respostasTexto = ['UM',1,'um',1,'Um',1,'DOIS',2,'dois',2,'Dois',2,'TRES',3,'TRÊS',3,'TREZ',3,'Tres',3,'Três',3,'Trez',3,'tres',3,'três',3,'trez',3,'QUATRO',4,'Quatro',4,'quatro',4,'CINCO',5,'Cinco',5,'cinco',5,'SEIS',6,'Seis',6,'seis',6,'SETE',7,'Sete',7,'sete',7,'OITO',8,'Oito',8,'oito',8,'NOVE',9,'Nove',9,'nove',9,'DEZ',10,'Dez',10,'Des',10,'dez',10,'1',1,'2',2,'3',3,'4',4,'5',5,'6',6,'7',7,'8',8,'9',9,'10',10];
+const micks = require('../config/micks');
+const respostasTexto = ['ZERO',0,'Zero',0,'zero',0,'UM',1,'um',1,'Um',1,'DOIS',2,'dois',2,'Dois',2,'TRES',3,'TRÊS',3,'TREZ',3,'Tres',3,'Três',3,'Trez',3,'tres',3,'três',3,'trez',3,'QUATRO',4,'Quatro',4,'quatro',4,'CINCO',5,'Cinco',5,'cinco',5,'SEIS',6,'Seis',6,'seis',6,'SETE',7,'Sete',7,'sete',7,'OITO',8,'Oito',8,'oito',8,'NOVE',9,'Nove',9,'nove',9,'DEZ',10,'Dez',10,'Des',10,'dez',10,'1',1,'2',2,'3',3,'4',4,'5',5,'6',6,'7',7,'8',8,'9',9,'10',10];
 var resp_correta = false;
 var clientEnvio;
 var sucesso = false;
 var repetido = true;
 var chatId = "";
 var nota = 0;
-var comentario = "Deixe um comentário sobre a nota que você atribuiu";
+var comentario = "Deixe um comentário sobre a nota que você atribuiu.";
 var agradecimento = "A Micks agradece o seu comentário.";
 var agradecimento_erro = "A Micks agradece a sua atenção.";
+
+var detrator = `Oi cliente, tudo bem?! Sou Taline, agente de atenção ao cliente da Micks. 
+Primeiramente, agradecemos pelo seu tempo em responder nossa avaliação. Gostamos de realizar essa pesquisa para acompanhar de perto a satisfação de quem confia na gente. 
+Vi que deu uma nota de satisfação abaixo da média e de antemão pedimos desculpas por isso. Graças ao seu comentário, sabemos agora a razão de sua insatisfação com nosso serviço e queremos atuar em seu caso. 
+Vamos acompanhar o seu caso internamente e manter contato com você para que possamos solucionar sua questão o mais breve possível, tá bom? 
+Um abraço e conte conosco sempre!
+Taline Santana,
+Time de Atenção ao cliente Micks`;
+
+var neutro = `Oi cliente, tudo bem?! Sou Taline, agente de atenção ao cliente da Micks. 
+Primeiramente, agradecemos pelo seu tempo em responder nossa avaliação. Realizamos essa pesquisa para acompanhar de perto a satisfação de quem confia na gente. 
+Vi que em sua nota enviou um comentário sobre sua percepção.  Gostaríamos muito de saber mais como podemos fazer para melhorar o serviço que oferecemos e aumentar a sua nota. Quaisquer informações, sugestões ou criticas será muito importante para direcionar nossas ações. 
+Queremos mudar sua satisfação para melhor e iremos atuar o mais breve possível. 
+Um abraço e conte conosco sempre!
+Time de Atenção ao cliente Micks`;
+
+var promotor = `Oi cliente, tudo bem?! Sou Taline, agente de atenção ao cliente da Micks. 
+Primeiramente, agradecemos pelo seu tempo em responder nossa avaliação.  Gostamos de realizar essa pesquisa para acompanhar de perto a satisfação de quem confia na gente. 
+Ficamos muuuuuuito felizes em receber a sua nota. E olha, se desejar compartilhar com quem quer conhecer nosso trabalho, temos uma página de avaliação no Google onde você pode dizer porque gosta e confia no nosso serviço.
+Basta acessar o link abaixo e deixar seu comentário e nota por lá. 
+Só uma dica: do lado direito, abaixo da foto e dados da Micks tem a opção COMENTAR. Clique para votar. 
+https://www.google.com.br/search?client=opera&q=MICKS+TELECOM&sourceid=opera&ie=UTF-8&oe=UTF-8
+
+Agradecemos sua confiança e conte conosco sempre que precisar!
+
+Um abraço,
+Equipe de Atenção ao cliente Micks`;
+
 var msg_padrao= "Olá Bem-Vindo a Micks. Entre em contato conosco atravez do (77)3451-3838";
-var pedir_numero_valido = "Por favor, digite um número válido. De 1 a 10.";
+var pedir_numero_valido = "Por favor, digite um número válido. De 0 a 10.";
 
 //Formata qualquer numero de Celular para o formato (77) 91234-5678
 function formatar_celular(num){
@@ -31,7 +60,7 @@ function formatar_celular(num){
         final = "erro";
     }
     return final;
-  }
+}
 
 function enviarPergunta(numero, texto){
     clientEnvio.sendText(numero, texto).then((result) => {
@@ -61,6 +90,26 @@ async function enviarLink(numero, link, descricao){
   });
 }
 
+function pegar_campanha(chatId){
+    const temp = chatId.slice(2); // Tira o 55
+    const cel = formatar_celular(temp);
+    //console.log(dataHora(),"Celular Formatado: ", cel);
+    return new Promise((resolve,reject)=>{
+        const pegar = `SELECT nome, cel, perfil, campanha FROM clientes WHERE cel='${cel}';`;
+        con_api.query(pegar, function (erro, result, fields){
+            if (erro){
+                console.log(dataHora(),erro);
+                reject(erro);
+            }
+            else{
+                const resposta = JSON.parse(JSON.stringify(result));
+                //console.log(dataHora(),"resposta: ", resposta);
+                resolve(resposta[0].campanha);
+            }
+        });
+    });
+}
+
 // Responder  Mensagem
 venom.create(
     'Devs',
@@ -72,7 +121,7 @@ venom.create(
       console.log(dataHora(),'Session name: ', session);
     },
     undefined
-).then((client) => {
+).then(async function (client){
     clientEnvio = client;
     client.onMessage( (message) => {
         clientEnvio = client;
@@ -103,35 +152,44 @@ venom.create(
 
                             // Se for uma resposta válida
                             if(resp_correta){
-                                const gravarResposta = `UPDATE pesquisa_chat SET resposta='${nota}', hora_resp=NOW() WHERE idchat='${message.chatId}';`;
-                                con_api.query(gravarResposta, function (erro1, result1, fields1){
-                                    if(erro1){
-                                        console.log(dataHora(),"UPDATE ERRO: ",erro1);
-                                    }
-                                    else{
-                                        console.log(dataHora(),"Resposta Gravada!");
 
-                                        //Envia a pergunta sobre o comentario.
-                                        
-                                        console.log(dataHora(),"Enviando pergunta do Comentário");
-                                        con_api.query(`UPDATE pesquisa_chat SET comentario='${comentario}' WHERE idchat='${message.chatId}'`, function (erro3, result3, fields3){
-                                            if(erro3){
-                                                console.log(dataHora(),"UPDATE ERRO: ",erro3); }
-                                            else{
-                                                console.log(dataHora(),"Pergunta do comentario enviada para pesquisa chat!");
-                                            }
-                                        });
-                                        con_api.query(`UPDATE resultado_chat SET comentario='${comentario}' WHERE idchat='${message.chatId}'`, function (erro6, result6, fields6){
-                                            if(erro6){
-                                                console.log(dataHora(),"UPDATE ERRO: ",erro6); }
-                                            else{
-                                                enviarPergunta(message.from, comentario);
-                                                console.log(dataHora(),"Pergunta do comentario enviada para resultado chat!");
-                                            }
-                                        });
+                                //Pega o nome da campanha
+                                pegar_campanha(message.chatId).then((res)=>{
+                                    const campanha = res;
+                                    const gravarResposta = `UPDATE pesquisa_chat SET resposta='${nota}', campanha='${campanha}', hora_resp=NOW() WHERE idchat='${message.chatId}';`;
+                                    con_api.query(gravarResposta, function (erro1, result1, fields1){
+                                        if(erro1){
+                                            console.log(dataHora(),"UPDATE ERRO: ",erro1);
+                                        }
+                                        else{
+                                            console.log(dataHora(),"Resposta Gravada!");
+    
+                                            //Envia a pergunta sobre o comentario.
+                                            
+                                            console.log(dataHora(),"Enviando pergunta do Comentário");
+                                            con_api.query(`UPDATE pesquisa_chat SET comentario='${comentario}' WHERE idchat='${message.chatId}'`, function (erro3, result3, fields3){
+                                                if(erro3){
+                                                    console.log(dataHora(),"UPDATE ERRO: ",erro3); }
+                                                else{
+                                                    console.log(dataHora(),"Pergunta do comentario enviada para pesquisa chat!");
+                                                }
+                                            });
+                                            con_api.query(`UPDATE resultado_chat SET comentario='${comentario}' WHERE idchat='${message.chatId}'`, function (erro6, result6, fields6){
+                                                if(erro6){
+                                                    console.log(dataHora(),"UPDATE ERRO: ",erro6); }
+                                                else{
+                                                    enviarPergunta(message.from, comentario);
+                                                    console.log(dataHora(),"Pergunta do comentario enviada para resultado chat!");
+                                                }
+                                            });
+    
+                                        }
+                                    });
 
-                                    }
+                                }).catch((erro)=>{
+                                    console.log("Erro ao pegar a campanha ",erro);
                                 });
+
                             }
                             
                             // Se a resposta não for válida.
@@ -188,7 +246,14 @@ venom.create(
                                         if(erro7){
                                             console.log(dataHora(),"UPDATE ERRO: ",erro7); }
                                         else{
-                                            enviarPergunta(message.from, agradecimento);
+                                            let resposta_personalizada = ``;
+                                            if(resposta[0].resposta < 7){resposta_personalizada = detrator;}
+                                            else if(resposta[0].resposta >= 7 && resposta[0].resposta <= 8){resposta_personalizada = neutro;}
+                                            else if(resposta[0].resposta > 8){resposta_personalizada = promotor;}
+                                            else{resposta_personalizada = agradecimento;}
+
+                                            //FINALIZA a pesquisa enviando uma resposta de acordo com a nota dada.
+                                            enviarPergunta(message.from, resposta_personalizada);
                                         }
                                     });
                                 }
@@ -204,9 +269,8 @@ venom.create(
             });
         }
     });
-}).catch((erro) => {
-console.log(dataHora(),erro);
-});
+})
+.catch((erro) => { console.log(dataHora(),erro); });
 
 //Pesquisa se o número já existe, ou seja, já enviou a pesquisa para esse numero.
 function numeroCadastrado(numero){
@@ -264,6 +328,46 @@ function gravaPergunta(id_pesquisa, nome, numero1, perfil, chatId, pergunta, usu
     });
 }
 
+function acessar_BD(query){
+    return new Promise((resolve , reject)=>{
+        con_api.query(query, function (erro, result, fields){
+            if (erro){
+                const retorno = {
+                    errorBD:"sim",
+                    resposta:erro.sqlMessage
+                }
+                reject(retorno);
+            }
+            else{
+                const resposta = JSON.parse(JSON.stringify(result));
+                const retorno = {
+                    errorBD:"nao",
+                    resposta:resposta
+                }
+                resolve(retorno);
+            }
+        });
+    })
+}
+
+function resposta_API(objeto, res, status=200, isOK=true){
+    if(isOK){
+        return res.status(status).json(objeto);
+    }else{
+        objeto.erroGeral = 'sim';
+        log("Erro ao responder API", 'erro');
+        return res.status(status).json(objeto);
+    }
+}
+
+function log(obj, modo=''){
+    if(modo === 'erro')   { console.log('\x1b[41m', dataHora(), obj, '\x1b[0m'); } // Fundo vermelho, cor padrão
+else if(modo === 'info')  { console.log('\x1b[36m', dataHora(), obj, '\x1b[0m'); } // Azul claro
+else if(modo === 'alerta'){ console.log('\x1b[33m', dataHora(), obj, '\x1b[0m'); } // Amarelo
+else if(modo === 'temp')  { console.log('\x1b[5m',  dataHora(), obj, '\x1b[0m'); } // Piscando, cor padrão
+else{                       console.log('\x1b[37m', dataHora(), obj, '\x1b[0m'); } // branco
+}
+
 class Zap{
 
     async enviarMsg(req, res){
@@ -314,13 +418,12 @@ class Zap{
             });
             }).catch((error)=>{
                 console.log(dataHora(),"Erro ao enviar a pesquisa para o cliente");
-                const sql_erro = `INSERT INTO erros (nome, cel, perfil, erro) values ("${nome}", "${numero1}", "${perfil}", "${error}")`;
-                con_api.query(sql_erro, function (erro, resultado, parametros) { if(erro){ console.log(erro); } });
+                const sql_erro = `INSERT INTO erros (nome, cel, perfil, erro) values ("${nome}", "${numero1}", "${perfil}", "Erro")`;
+                con_api.query(sql_erro, function (erro, resultado, parametros) { if(erro){ console.log(dataHora(), erro); } });
                 return res.status(200).json({
                     error: "sim",
                     code: 404,
-                    msg: "Erro ao enviar a pesquisa para o cliente",
-                    err: error
+                    msg: "Erro ao enviar a pesquisa para o cliente"
                 });
             });
 
@@ -1023,6 +1126,16 @@ class Zap{
                     resposta: resposta
                 });
             }
+        });
+    }
+
+    async teste(req, res){
+        const query = `SELECT nome, cel, perfil, campanha FROM clientes WHERE cel='${req.body.cel}';`;
+        await micks.acessar_BD(query).then((result)=>{
+            micks.resposta_API(result, res, 200, true);
+        }).catch((erro)=>{
+            micks.log(erro, 'erro');
+            micks.resposta_API(erro, res, 200, false);
         });
     }
 

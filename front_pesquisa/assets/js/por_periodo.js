@@ -78,16 +78,21 @@ function formatar_celular(num){
   return final;
 }
 
+function exibirForm(){
+  document.getElementById('myForm').style.display = 'block'
+}
+
 // Busca na API VENOM se o número é um WhatsApp válido
-function verificar_zap_valido(cel){
+function verificar_zap_valido(cel) {
   const formatado = cel.replace(/\D+/g, "");
-  return new Promise((resolve,reject)=>{
+  return new Promise((resolve, reject) => {
     axios.post(`${ip}existe`, {
       usuario: sessionStorage.usuario,
       senha: sessionStorage.senha,
       numero: formatado
-    }).then( function (response) { resolve(response);
-    }).catch(function (error)    { reject(error); });
+    }).then(function (response) {
+      resolve(response);
+    }).catch(function (error) { reject(error); });
   });
 }
 
@@ -142,34 +147,34 @@ function inserir_ou_atualizar(cliente){
 async function Verificar_ZAP_CSV(){
   campanha = document.getElementById('campanha').value;
 
-  if(campanha.length < 5){
+  if (campanha.length < 5) {
     Swal.fire({
       icon: 'info',
       title: 'Oops...',
       text: 'É necessário inserir um nome de campanha apropriado!'
     });
   }
-  else{
+  else {
     document.getElementById('tabela').style.display = 'block';
     for (const [index, cliente] of data_csv.entries()) {
       const resposta = await verificar_zap_valido(cliente.celular);
-      if(resposta.data.msg == "WhatsApp OK"){
-          //Se o número for um WhatsApp válido, insere ou atualiza na tabela cliente.
-          const resposta2 = await inserir_ou_atualizar(cliente);
-          if(resposta2 == 'UPDATE'){
-            $("#corpo").append(`<tr><td>${index+1}</td><td>${cliente.nome_cliente}</td><td>${formatar_celular(cliente.celular)}</td><td><img src='./assets/img/ok.jpg' width='40' height='40'></img></td><td>Atualizado</td></tr>`);
-            clientes_com_zap_validos.push(cliente);
-            clientes_existentes++;
-          }else if(resposta2 == 'INSERT'){
-            $("#corpo").append(`<tr><td>${index+1}</td><td>${cliente.nome_cliente}</td><td>${formatar_celular(cliente.celular)}</td><td><img src='./assets/img/ok.jpg' width='40' height='40'></img></td><td>Inserido</td></tr>`);
-            clientes_novos++;
-            clientes_com_zap_validos.push(cliente);
-          }else{
-            $("#corpo").append(`<tr><td>${index+1}</td><td>${cliente.nome_cliente}</td><td>${formatar_celular(cliente.celular)}</td><td><img src='./assets/img/alert.png' width='40' height='40'></img></td><td>Erro SQL</td></tr>`);
-          }
+      if (resposta.data.msg == "WhatsApp OK") {
+        //Se o número for um WhatsApp válido, insere ou atualiza na tabela cliente.
+        const resposta2 = await inserir_ou_atualizar(cliente);
+        if (resposta2 == 'UPDATE') {
+          $("#corpo").append(`<tr><td>${index + 1}</td><td>${cliente.nome_cliente}</td><td>${formatar_celular(cliente.celular)}</td><td><img src='./assets/img/ok.jpg' width='40' height='40'></img></td><td>Atualizado</td></tr>`);
+          clientes_com_zap_validos.push(cliente);
+          clientes_existentes++;
+        } else if (resposta2 == 'INSERT') {
+          $("#corpo").append(`<tr><td>${index + 1}</td><td>${cliente.nome_cliente}</td><td>${formatar_celular(cliente.celular)}</td><td><img src='./assets/img/ok.jpg' width='40' height='40'></img></td><td>Inserido</td></tr>`);
+          clientes_novos++;
+          clientes_com_zap_validos.push(cliente);
+        } else {
+          $("#corpo").append(`<tr><td>${index + 1}</td><td>${cliente.nome_cliente}</td><td>${formatar_celular(cliente.celular)}</td><td><img src='./assets/img/alert.png' width='40' height='40'></img></td><td>Erro SQL</td></tr>`);
+        }
       }
-      else{
-          $("#corpo").append(`<tr><td>${index+1}</td><td>${cliente.nome_cliente}</td><td>${formatar_celular(cliente.celular)}</td><td><img src='./assets/img/erro.jpg' width='40' height='40'></img></td><td>Descartado</td></tr>`);
+      else {
+        $("#corpo").append(`<tr><td>${index + 1}</td><td>${cliente.nome_cliente}</td><td>${formatar_celular(cliente.celular)}</td><td><img src='./assets/img/erro.jpg' width='40' height='40'></img></td><td>Descartado</td></tr>`);
       }
     }
   
@@ -183,7 +188,7 @@ async function Verificar_ZAP_CSV(){
   }
 }
 
-function sair(){
+function sair() {
   sessionStorage.login = 'NOT';
   sessionStorage.ip = '...';
   sessionStorage.usuario = "...";
@@ -191,11 +196,11 @@ function sair(){
   location.replace("index.html");
 }
 
-if(login != 'OK'){
-    document.getElementById('msg').innerHTML = "Acesso não autorizado";
-    setTimeout(function() {
-      location.replace("index.html");
-    }, 500);
-}else{
+if (login != 'OK') {
+  document.getElementById('msg').innerHTML = "Acesso não autorizado";
+  setTimeout(function () {
+    location.replace("index.html");
+  }, 500);
+} else {
 
 }

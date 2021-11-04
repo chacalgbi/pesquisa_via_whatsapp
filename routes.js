@@ -76,4 +76,7 @@ routes.post('/listar_ids',         validarLogin, Zap.listar_ids);
 routes.post('/existe_numero',      validarLogin, Zap.existe_numero);
 routes.get('/mostrar_cliente/:id', Zap.mostrar_cliente);
 
+//Teste
+routes.post('/teste', Zap.teste);
+
 module.exports = routes;
