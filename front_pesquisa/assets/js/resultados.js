@@ -8,8 +8,18 @@ $(document).ready(function() {
       sql: "SELECT *, DATE_FORMAT(hora_resp, '%d/%m/%Y %H:%i') as hora_nota, DATE_FORMAT(hora_come, '%d/%m/%Y %H:%i') as hora_com FROM resultado_chat;"
     }).then(function (response) {
         var table = "";
+        let cor = "";
         for (let index = 0; index < response.data.resposta.length; index++){
-          table = table + `<tr>
+            if(response.data.resposta[index].resposta == "10" || response.data.resposta[index].resposta == "9"){
+                cor = "bg-primary";
+            }else if(response.data.resposta[index].resposta == "8" || response.data.resposta[index].resposta == "7"){
+                cor = "bg-warning";
+            }else{
+                cor = "bg-danger";
+            }
+
+
+          table = table + `<tr class="${cor}">
           <td>${index + 1}</td>
           <td>${response.data.resposta[index].nome}</td>
           <td>${response.data.resposta[index].cel}</td>

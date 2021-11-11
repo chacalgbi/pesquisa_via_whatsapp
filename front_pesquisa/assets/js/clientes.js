@@ -1,12 +1,12 @@
 var login = sessionStorage.login;
 const ip = sessionStorage.ip;
 
-$(document).ready( function ($) {
+$(document).ready( function ($){
   listar_perfis();
   iniciar();
   listar_perfis_cadastrar();
   $('#cadastrar_celular').mask('(00) 00000-0000');
-} );
+});
 
 $('#editarModal').on('show.bs.modal', function (event) {
   document.getElementById('foto_cliente').src = "no_image.jpg";
@@ -50,7 +50,6 @@ $('#editarModal').on('show.bs.modal', function (event) {
   document.getElementById('editar_aceita_pesquisa').innerHTML = pes;
 
   fotoCliente(celular);
-
 })
 
 function sair(){
@@ -115,8 +114,6 @@ function cadastrar(){
         console.log(error);
       });
   }
-
- 
 }
 
 function validarWhatsAppEdit(item){
@@ -291,8 +288,6 @@ function editar(){
         console.log(error);
       });
   }
-
- 
 }
 
 function apagar(id){
@@ -361,12 +356,15 @@ function iniciar(){
           });
         }else{
           var table = "";
+          let cor = "";
           for (let index = 0; index < response.data.resposta.length; index++){
-            table = table + `<tr>
+            if(response.data.resposta[index].zap_valido == 'nao'){cor= 'table-danger';}else{cor="table-light";}
+            table = table + `<tr class="${cor}">
             <td>${index + 1}</td>
             <td>${response.data.resposta[index].nome}</td>
             <td>${response.data.resposta[index].cod_cliente}</td>
             <td>${response.data.resposta[index].perfil}</td>
+            <td>${response.data.resposta[index].campanha}</td>
             <td>${response.data.resposta[index].cidade}</td>
             <td>${response.data.resposta[index].cel}</td>
             <td>${response.data.resposta[index].zap_valido}</td>
@@ -387,7 +385,7 @@ function iniciar(){
           }
           document.getElementById('corpo').innerHTML = table;
           document.getElementById('qtd_clientes').innerHTML = `${response.data.resposta.length} Registros encontrados.`;
-          $('#tabela2').DataTable();
+          //$('#tabela2').DataTable();
         }
       })
       .catch(function (error) {
@@ -427,6 +425,8 @@ function listar_perfis(){
 }
 
 function listar_por(item){
+  document.getElementById('corpo').innerHTML = "";
+  //$('#tabela2').DataTable();
   //console.log(item.value);
   axios.post(`${ip}listar_clientes`, {
     usuario: sessionStorage.usuario,
@@ -441,13 +441,21 @@ function listar_por(item){
       });
     }else{
       var table = "";
+      let contagem = 0;
+      let cor = "";
       document.getElementById('corpo').innerHTML = table;
       for (let index = 0; index < response.data.resposta.length; index++){
-        table = table + `<tr>
+        if($("#zap_nulo").is(':checked') && response.data.resposta[index].zap_valido === 'sim'){
+          continue;
+        }
+        if(response.data.resposta[index].zap_valido == 'nao'){cor= 'table-danger';}else{cor="table-light";}
+        contagem++;
+        table = table + `<tr class="${cor}">
         <td>${index + 1}</td>
         <td>${response.data.resposta[index].nome}</td>
         <td>${response.data.resposta[index].cod_cliente}</td>
         <td>${response.data.resposta[index].perfil}</td>
+        <td>${response.data.resposta[index].campanha}</td>
         <td>${response.data.resposta[index].cidade}</td>
         <td>${response.data.resposta[index].cel}</td>
         <td>${response.data.resposta[index].zap_valido}</td>
@@ -467,8 +475,8 @@ function listar_por(item){
         </tr>`
       }
       document.getElementById('corpo').innerHTML = table;
-      document.getElementById('qtd_clientes').innerHTML = `${response.data.resposta.length} Registros encontrados.`;
-      $('#tabela2').DataTable();
+      document.getElementById('qtd_clientes').innerHTML = `${contagem} Registros encontrados.`;
+      //$('#tabela2').DataTable();
     }
   })
   .catch(function (error) {
