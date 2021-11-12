@@ -213,14 +213,22 @@ venom.create(
                                     // Se já respondeu errado uma vez, agradece e finaliza o chat.
                                     if(resposta[0].tentativas == 1){
                                         console.log(dataHora(),"Segunda resposta errada deste cliente");
-                                        con_api.query(`UPDATE pesquisa_chat SET tentativas='2' WHERE idchat='${message.chatId}'`, function (erro5, result5, fields5){
-                                            if(erro5){
-                                                console.log(dataHora(),"UPDATE ERRO: ",erro5); }
-                                            else{
-                                                console.log(dataHora(),"Tentativa 2 Gravada!");
-                                                enviarPergunta(message.from, agradecimento_erro);
+                                        let celular1 = formatar_celular(resposta[0].cel);
+                                        con_api.query(`INSERT INTO nao_respondeu (nome, cel, msg) values ("${resposta[0].nome}", "${celular1}", "${message.body}");`, function (er, certo, linhas){ 
+                                            if(er){
+                                                console.log(er);
+                                            }else{
+                                                console.log("Cliente Inserido na tabela nao_respondeu.");
                                             }
-                                        });
+                                            con_api.query(`UPDATE pesquisa_chat SET tentativas='2' WHERE idchat='${message.chatId}'`, function (erro5, result5, fields5){
+                                                if(erro5){
+                                                    console.log(dataHora(),"UPDATE ERRO: ",erro5); }
+                                                else{
+                                                    console.log(dataHora(),"Tentativa 2 Gravada!");
+                                                    enviarPergunta(message.from, agradecimento_erro);
+                                                }
+                                            });
+                                        });  
                                     }
                                     else{
                                         // Se o cliente ficar enviando mais coisas, não faz nada.
@@ -381,6 +389,16 @@ class Zap{
         var numero1  = String(req.body.numero);
         var numero2  = String("55" + req.body.numero + "@c.us");
         var pergunta = String(req.body.pergunta);
+        var sucesso1 = true;
+        var sucesso2 = true;
+
+        await con_api.query("TRUNCATE Table pesquisa_chat;", (er1, res1, fild1)=>{
+            if(er1){
+                console.log(er1);
+            }else{
+                console.log("Tabela pesquisa_chat APAGADA");
+            }
+        });
 
         await numeroCadastrado(numero1).then((resp)=>{
                 if(resp == 0){
@@ -388,6 +406,7 @@ class Zap{
                     repetido = false;
                 }else{
                     repetido = true;
+                    sucesso1 = false;
                     console.log(dataHora(),"Ja foi enviada uma mensagem para esse numero");
                     return res.status(200).json({
                         error: "sim",
@@ -397,6 +416,7 @@ class Zap{
                 }
             }).catch((erro)=>{
                 repetido = true;
+                sucesso1 = false;
                 console.log(`Erro ao Buscar numero no banco de dados`);
                 return res.status(200).json({
                     error: "sim",
@@ -406,43 +426,49 @@ class Zap{
                 });
             });
 
-        await enviaPesquisa(numero2, pergunta, nome).then(()=>{
-            let num = formatar_celular(numero1);
-            const sql_num = `UPDATE clientes SET ultima_pesquisa= NOW() WHERE cel='${num}';`;
-            con_api.query(sql_num, function (erro, resultado, parametros) {
-                if(erro){
-                    console.log(erro);
-                }else{
-                    console.log(dataHora(),"Ultima_Pesquisa atualizada");
-                }
-            });
-            }).catch((error)=>{
-                console.log(dataHora(),"Erro ao enviar a pesquisa para o cliente");
-                const sql_erro = `INSERT INTO erros (nome, cel, perfil, erro) values ("${nome}", "${numero1}", "${perfil}", "Erro")`;
-                con_api.query(sql_erro, function (erro, resultado, parametros) { if(erro){ console.log(dataHora(), erro); } });
-                return res.status(200).json({
-                    error: "sim",
-                    code: 404,
-                    msg: "Erro ao enviar a pesquisa para o cliente"
+        if(sucesso1 === true){
+            await enviaPesquisa(numero2, pergunta, nome).then(()=>{
+                let num = formatar_celular(numero1);
+                const sql_num = `UPDATE clientes SET ultima_pesquisa= NOW() WHERE cel='${num}';`;
+                con_api.query(sql_num, function (erro, resultado, parametros) {
+                    if(erro){
+                        console.log(erro);
+                    }else{
+                        console.log(dataHora(),"Ultima_Pesquisa atualizada");
+                    }
                 });
-            });
+                }).catch((error)=>{ 
+                    sucesso2 = false;
+                    console.log(dataHora(),"Erro ao enviar a pesquisa para o cliente");
+                    const sql_erro = `INSERT INTO erros (nome, cel, perfil, erro) values ("${nome}", "${numero1}", "${perfil}", "Erro")`;
+                    con_api.query(sql_erro, function (erro, resultado, parametros) { if(erro){ console.log(dataHora(), erro); } });
+                    return res.status(200).json({
+                        error: "sim",
+                        code: 404,
+                        msg: "Erro ao enviar a pesquisa para o cliente"
+                    });
+                });
+    
+            if(sucesso2 === true){
+                await gravaPergunta(id_pesquisa, nome, numero1, perfil, chatId, pergunta, usuario).then(()=>{
+                    console.log(dataHora(),'Enviado e Gravado com sucesso');
+                        return res.status(200).json({
+                            error: "nao",
+                            code: 200,
+                            msg: "Enviado e Gravado com sucesso"
+                        });
+                    }).catch((error)=>{
+                        console.log(dataHora(),`Erro ao Gravar na Tabela: ${error}`);
+                        return res.status(200).json({
+                            error: "sim",
+                            code: 404,
+                            msg: 'Erro ao Gravar na Tabela',
+                            err: error
+                        });
+                    });
+            }
+        }
 
-        await gravaPergunta(id_pesquisa, nome, numero1, perfil, chatId, pergunta, usuario).then(()=>{
-            console.log(dataHora(),'Enviado e Gravado com sucesso');
-                return res.status(200).json({
-                    error: "nao",
-                    code: 200,
-                    msg: "Enviado e Gravado com sucesso"
-                });
-            }).catch((error)=>{
-                console.log(dataHora(),`Erro ao Gravar na Tabela: ${error}`);
-                return res.status(200).json({
-                    error: "sim",
-                    code: 404,
-                    msg: 'Erro ao Gravar na Tabela',
-                    err: error
-                });
-            });
 
     }
 

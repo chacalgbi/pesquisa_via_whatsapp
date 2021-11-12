@@ -1,13 +1,17 @@
 PAUTAS DO START - 10/11/2021
 
-Inativos dentro do banco de dados da plataforma- PASSAR SCRIPT PARA ATUALIZAR SEMANALMENTE.
+OK - Inativos dentro do banco de dados da plataforma- PASSAR SCRIPT PARA ATUALIZAR SEMANALMENTE.
  
 OK - WhatsApp inválidos – DELIMITAR UM ESPAÇO PARA A IDA DELES, PARA IDENTIFICARMOS QUAIS PRECISAM DE ATUALIZAÇÃO.
  
 OK - Separar por cor - PROMOTOR- AZUL/ DETRATOR/ VERMELHO /NEUTRO - AMARELO - NA COLHEITA FINAL
+
+OK - RETORNO NULO – CLIENTE QUE NÃO QUER NEM RESPONDER A PERGUNTA
  
-Número do NPS - DESCOBRIR FORMULA PARA CALCULO DE MÉDIA GERAL
+OK - Número do NPS - DESCOBRIR FORMULA PARA CALCULO DE MÉDIA GERAL
  
-CRIAR UM FORMA DE MEDIR NPS DE CADA PESQUISA
+OK - CRIAR UM FORMA DE MEDIR NPS DE CADA PESQUISA
  
-RETORNO NULO – CLIENTE QUE NÃO QUER NEM RESPONDER A PERGUNTA
+OK - Exibir o NPS total da micks, somando o socore de todas as pesquisas.
+
+Integrar no script zap_valido.js a função de consultar no Integrator se o cliente está cancelado, se tiver, exclui da Base de dados NPS.

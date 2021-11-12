@@ -13,6 +13,8 @@ var nota7 = '';
 var nota8 = '';
 var nota9 = '';
 var nota10 = '';
+var promotor= '';
+var detrator= '';
 
 $('#relatorioModal').on('show.bs.modal', function (event) {
   //let titulo = document.getElementById('selecionar_notas').text;
@@ -33,41 +35,23 @@ function grafico(dados, rotulo){
 
   if(Grafico){Grafico.destroy();}
 
-  const labels = ['Total Respostas', 'Média Geral', 'Nota 0', 'Nota 1', 'Nota 2', 'Nota 3', 'Nota 4', 'Nota 5', 'Nota 6', 'Nota 7', 'Nota 8', 'Nota 9', 'Nota 10'];
+  const labels = ['Total Respostas', 'Promotor', 'Detrator', 'Score NPS'];
   const data = {
     labels: labels,
     datasets: [{
       label: rotulo,
       data: dados,
       backgroundColor: [
-        'rgba(222,184,135, 0.2)',
-        'rgba(105,105,105, 1)',
-        'rgba(75, 192, 192, 0.2)',
-        'rgba(54, 162, 235, 0.2)',
-        'rgba(255, 206, 86, 0.2)',
-        'rgba(75, 192, 192, 0.2)',
-        'rgba(255, 99, 132, 0.2)',
-        'rgba(255, 159, 64, 0.2)',
-        'rgba(255, 205, 86, 0.2)',
-        'rgba(75, 192, 192, 0.2)',
-        'rgba(54, 162, 235, 0.2)',
-        'rgba(153, 102, 255, 0.2)',
-        'rgba(0, 250, 154, 0.2)'
+        'rgba(128, 128, 128, 0.8)',
+        'rgba(50, 205, 50, 0.8)',  // Promotor
+        'rgba(255, 0, 0, 0.8)',  // Detrator
+        'rgba(0, 0, 255, 0.8)' // Score NPS
       ],
       borderColor: [
-        'rgba(210,105,30, 1)',
-        'rgba(54, 162, 235, 1)',
-        'rgba(75, 192, 192, 0.2)',
-        'rgba(54, 162, 235, 1)',
-        'rgba(255, 206, 86, 1)',
-        'rgba(75, 192, 192, 1)',
-        'rgb(255, 99, 132, 1)',
-        'rgb(255, 159, 64, 1)',
-        'rgb(255, 205, 86, 1)',
-        'rgb(75, 192, 192, 1)',
-        'rgb(54, 162, 235, 1)',
-        'rgb(153, 102, 255, 1)',
-        'rgb(0,255,127, 1)'
+        'rgba(0, 0, 0, 1)',
+        'rgb(0, 255, 0, 1)',   // Promotor
+        'rgb(255, 0, 0, 1)',   // Detrator
+        'rgb(0, 0, 128, 1)'    // Score NPS
       ],
       borderWidth: 1
     }]
@@ -116,6 +100,8 @@ function listar_pesquisas(item){
   nota8 = '';
   nota9 = '';
   nota10 = '';
+  promotor= '';
+  detrator= '';
 
   const valores = item.value.split('|');
   const sql = `SELECT * FROM resultado_chat WHERE id_pesquisa='${valores[0]}';`;
@@ -150,25 +136,25 @@ function listar_pesquisas(item){
       response.data.resposta.forEach((item, index)=>{
         media = media + item.resposta;
 
-             if(item.resposta == 0) { zero++;     
+            if(item.resposta == 0) { zero++; detrator++;
               nota0 = nota0 + `<tr><td>${item.nome}</td><td>${item.cel}</td><td>${item.perfil}</td><td>${item.resposta}</td><td>${item.comen_resp}</td></tr>`;
             }
-        else if(item.resposta == 1) { um++;   
+        else if(item.resposta == 1) { um++; detrator++;
           nota1 = nota1 + `<tr><td>${item.nome}</td><td>${item.cel}</td><td>${item.perfil}</td><td>${item.resposta}</td><td>${item.comen_resp}</td></tr>`;
         }
-        else if(item.resposta == 2) { dois++;   
+        else if(item.resposta == 2) { dois++; detrator++;
           nota2 = nota2 + `<tr><td>${item.nome}</td><td>${item.cel}</td><td>${item.perfil}</td><td>${item.resposta}</td><td>${item.comen_resp}</td></tr>`;
         }
-        else if(item.resposta == 3) { tres++;   
+        else if(item.resposta == 3) { tres++; detrator++;
           nota3 = nota3 + `<tr><td>${item.nome}</td><td>${item.cel}</td><td>${item.perfil}</td><td>${item.resposta}</td><td>${item.comen_resp}</td></tr>`;
         }
-        else if(item.resposta == 4) { quatro++; 
+        else if(item.resposta == 4) { quatro++; detrator++;
           nota4 = nota4 + `<tr><td>${item.nome}</td><td>${item.cel}</td><td>${item.perfil}</td><td>${item.resposta}</td><td>${item.comen_resp}</td></tr>`;
         }
-        else if(item.resposta == 5) { cinco++;  
+        else if(item.resposta == 5) { cinco++; detrator++;
           nota5 = nota5 + `<tr><td>${item.nome}</td><td>${item.cel}</td><td>${item.perfil}</td><td>${item.resposta}</td><td>${item.comen_resp}</td></tr>`;
         }
-        else if(item.resposta == 6) { seis++;   
+        else if(item.resposta == 6) { seis++; detrator++;
           nota6 = nota6 + `<tr><td>${item.nome}</td><td>${item.cel}</td><td>${item.perfil}</td><td>${item.resposta}</td><td>${item.comen_resp}</td></tr>`;
         }
         else if(item.resposta == 7) { sete++;   
@@ -177,27 +163,22 @@ function listar_pesquisas(item){
         else if(item.resposta == 8) { oito++;   
           nota8 = nota8 + `<tr><td>${item.nome}</td><td>${item.cel}</td><td>${item.perfil}</td><td>${item.resposta}</td><td>${item.comen_resp}</td></tr>`;
         }
-        else if(item.resposta == 9) { nove++;   
+        else if(item.resposta == 9) { nove++; promotor++;
           nota9 = nota9 + `<tr><td>${item.nome}</td><td>${item.cel}</td><td>${item.perfil}</td><td>${item.resposta}</td><td>${item.comen_resp}</td></tr>`;
         }
-        else if(item.resposta == 10){ dez++;    
+        else if(item.resposta == 10){ dez++; promotor++;
           nota10 = nota10 + `<tr><td>${item.nome}</td><td>${item.cel}</td><td>${item.perfil}</td><td>${item.resposta}</td><td>${item.comen_resp}</td></tr>`;
         }
       });
       media = media / response.data.resposta.length;
-      
-      dados.push(media);
-      dados.push(zero);
-      dados.push(um);
-      dados.push(dois);
-      dados.push(tres);
-      dados.push(quatro);
-      dados.push(cinco);
-      dados.push(seis);
-      dados.push(sete);
-      dados.push(oito);
-      dados.push(nove);
-      dados.push(dez);
+
+      let porcent_promotores = parseFloat(((promotor / response.data.resposta.length)*100).toFixed(1));
+      let porcent_detratores = parseFloat(((detrator / response.data.resposta.length)*100).toFixed(1));
+      let score_nps = porcent_promotores - porcent_detratores;
+
+      dados.push(porcent_promotores);
+      dados.push(porcent_detratores);
+      dados.push(score_nps);
 
       grafico(dados, rotulo);
     }

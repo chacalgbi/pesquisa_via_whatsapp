@@ -5,13 +5,16 @@ var listaClientes = [];
 var numeroClientes = 0;
 var numerosValidos = 0;
 var numerosInvalidos = 0;
+var sql = '';
+
+const [perfil]  = process.argv.slice(2);
+perfil == undefined ? sql='SELECT id, nome, TRIM(cel) AS celular FROM clientes' : sql=`SELECT id, nome, TRIM(cel) AS celular FROM clientes WHERE perfil= "${perfil}";`;
 
 console.log(dataHora(),'Iniciando script de verificacao de numero valido de WhatzApp');
 
 function clientes(){
     return new Promise((resolve,reject)=>{
-        const cli = 'SELECT id, TRIM(cel) AS celular FROM clientes WHERE perfil= "Geral";'; //  WHERE perfil= "Geral"
-        con_api.query(cli, function (erro, result, fields){
+        con_api.query(sql, function (erro, result, fields){
             if (erro){
                 console.log(dataHora(),erro);
                 reject(erro);
