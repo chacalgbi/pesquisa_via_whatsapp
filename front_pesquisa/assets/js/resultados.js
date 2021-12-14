@@ -20,7 +20,7 @@ $(document).ready(function() {
 
 
           table = table + `<tr class="${cor}">
-          <td>${index + 1}</td>
+          <td>${response.data.resposta[index].id}</td>
           <td>${response.data.resposta[index].nome}</td>
           <td>${response.data.resposta[index].cel}</td>
           <td>${response.data.resposta[index].perfil}</td>

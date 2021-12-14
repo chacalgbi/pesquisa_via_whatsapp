@@ -50,8 +50,8 @@ async function getTodos() {
     let estado = 'nao';
     for (const [index, cliente] of listaClientes.entries()) {
         const resposta = await testarNumeros(cliente);
-        console.log(dataHora(),`${index+1} Verificados: `, resposta.data.msg, " - ", cliente);
-        if(resposta.data.pode_receber_mensagens){
+        console.log(dataHora(),`${index+1} `,resposta.data.msg," ",cliente.nome, cliente.celular);
+        if(resposta.data.msg === 'WhatsApp OK'){
             numerosValidos++;
             estado = 'sim';
         }

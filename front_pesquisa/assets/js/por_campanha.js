@@ -8,6 +8,7 @@ var enviados = 50;
 var listaClientes = [];
 var id_pesq = 0;
 var dias = 0;
+var existe_campanha = false;
 
 // 1 - Na inicialização, Pegar as perguntas da tabela e colocar no Select INPUT
 function listar_perguntas(){
@@ -50,7 +51,7 @@ function listar_campanhas(){
         text: 'Parece que você não tem permissão para isso'
       });
     }else{
-      console.log(response.data.resposta);
+      //console.log(response.data.resposta);
       perfis = "<form>";
       response.data.resposta.map((item, index)=>{
         perfis = perfis + `<div class="form-check"><input class="form-check-input" type="radio" name="camp" value="${item.campanha}" id="${item.campanha}">${item.campanha}</div>`
@@ -76,7 +77,7 @@ function mostrar_checks(){
   document.getElementById('checks').style.display = 'block';
   document.getElementById('checks1').style.display = 'block';
   dias = document.getElementById('selecionar_dias').value;
-  console.log(dias);
+  //console.log(dias);
 }
 
 // 5 - Busca os clientes baseado na campanha selecionada e fora do tempo de ultima_pesquisa
@@ -94,13 +95,16 @@ function buscar_clientes_campanha(){
         text: 'Parece que você não tem permissão para isso'
       });
     }else{
-      console.log(response.data.resposta);
+      //console.log(response.data.resposta.length);
       listaClientes = response.data.resposta;
       let cli = '';
       response.data.resposta.map((item, index)=>{
         cli = cli + `${index+1} - ${item.nome} - ${item.cel}\n`;
       });
       document.getElementById('visualizar_clientes').value = cli;
+      document.getElementById('btn_enviar_pesquisa').innerHTML = `Enviar pesquisa para ${response.data.resposta.length} clientes  <i class='bx bxl-whatsapp' ></i>`;
+
+      verifica_campanha();
     }
   })
   .catch(function (error) {
@@ -156,21 +160,45 @@ function confirmar_enviar(qtd){
       document.getElementById('total_label').innerHTML = `Total: ${qtd}`;
       $('#progress_total').css('width', '100%').attr('aria-valuenow', 100).html('100%');
       $('#progress_parcial').css('width', '0%').attr('aria-valuenow', 0).html('0%');
+      document.getElementById('btn_enviar_pesquisa').style.display = 'none;'
       chamar();
     }
   })
 }
 
+// Verifica se existe o nome da campanha já na tabela "pesquisas_enviadas"
+function verifica_campanha(){
+  let topico = document.querySelector('input[name=camp]:checked').value;
+  let sql = `SELECT topico FROM pesquisas_enviadas WHERE topico = '${topico}';`;
+    axios.post(`${ip}listar_clientes`, {
+      usuario: sessionStorage.usuario,
+      senha: sessionStorage.senha,
+      sql: sql
+    }).then( function (response) {
+      //console.log(response.data.resposta);
+      if(response.data.resposta.length === 1){
+        existe_campanha = true;
+        //console.log("Existe campanha");
+      }else{
+        existe_campanha = false;
+        //console.log("Não existe campanha");
+      }
+    })
+    .catch(function (error)    { console.log(error); });
+}
+
 //3
 async function chamar(){
-  await gravar_pesquisas_enviadas().then((res)=>{
-    console.log(res.data.msg);
-  }).catch((erro)=>{
-      console.log(erro);
-  });
+  if(existe_campanha === false){ // Se a campanha já existir como TOPICO na tabela pesquisas_enviadas, não cria outra pesquisa enviada repetida.
+    await gravar_pesquisas_enviadas().then((res)=>{
+      //console.log(res.data.msg);
+    }).catch((erro)=>{
+        console.log(erro);
+    });
+  }
 
   await pegar_ultima_pesquisa().then((res)=>{
-      console.log("Pesquisa número: ",res.data.resposta[0].id);
+      //console.log("Pesquisa número: ",res.data.resposta[0].id);
       id_pesq = res.data.resposta[0].id;
   }).catch((erro)=>{
       console.log("Entrou no catch ",erro);
@@ -211,15 +239,29 @@ function pegar_ultima_pesquisa(){
 
 }
 
+// Dar tempo de 10 segundos entre os envios de pesquisa
+function tempo_entre_envios(){
+  return new Promise((resolve, reject)=>{
+      setTimeout(()=>{ 
+              resolve("OK");
+      }, 10000);
+  });
+}
+
 //6
 async function getTodos() {
+  let enviados = 0;
+  let total = listaClientes.length;
   for (const [index, cliente] of listaClientes.entries()) {
       const num_existe = await verificar_se_numero_existe(cliente.cel);
-      console.log(num_existe.data);
+      //console.log(num_existe.data);
       const resposta = await enviando_pesquisa(cliente);
-      console.log(`${index+1} Enviados: `, resposta.data.msg, " - ", cliente);
+      console.log(`${index+1} Enviados: `, resposta.data.msg, " - ", cliente.nome);
       let parcial = parseInt((100 * (index+1)) / num_pesquisas);
+      enviados++;
       $('#progress_parcial').css('width', parcial+'%').attr('aria-valuenow', parcial).html(`${parcial}%`);
+      document.getElementById('total_progress').innerHTML = `Progresso do Envio: ${enviados} / ${total} Cli: ${cliente.nome}`;
+      await tempo_entre_envios(); // Aguardar 10 segundos!
   }
 
   Swal.fire({
@@ -227,7 +269,7 @@ async function getTodos() {
     icon: 'success',
     title: 'Envio Finalizado!',
     showConfirmButton: false,
-    timer: 4000
+    timer: 6000
   });
 
   //setTimeout(function() { location.replace("lista.html"); }, 5000);

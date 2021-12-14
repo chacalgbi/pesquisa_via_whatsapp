@@ -14,4 +14,4 @@ OK - CRIAR UM FORMA DE MEDIR NPS DE CADA PESQUISA
  
 OK - Exibir o NPS total da micks, somando o socore de todas as pesquisas.
 
-Integrar no script zap_valido.js a função de consultar no Integrator se o cliente está cancelado, se tiver, exclui da Base de dados NPS.
+OK - Integrar no script zap_valido.js a função de consultar no Integrator se o cliente está cancelado, se tiver, exclui da Base de dados NPS.

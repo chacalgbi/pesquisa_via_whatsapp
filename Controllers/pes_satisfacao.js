@@ -10,39 +10,58 @@ var sucesso = false;
 var repetido = true;
 var chatId = "";
 var nota = 0;
-var comentario = "Deixe um comentário sobre a nota que você atribuiu.";
+var comentario = "Obrigado por contribuir com nossa pesquisa! Deixe um comentário sobre a nota que você atribuiu.";
 var agradecimento = "A Micks agradece o seu comentário.";
 var agradecimento_erro = "A Micks agradece a sua atenção.";
 
-var detrator = `Oi cliente, tudo bem?! Sou Taline, agente de atenção ao cliente da Micks. 
-Primeiramente, agradecemos pelo seu tempo em responder nossa avaliação. Gostamos de realizar essa pesquisa para acompanhar de perto a satisfação de quem confia na gente. 
-Vi que deu uma nota de satisfação abaixo da média e de antemão pedimos desculpas por isso. Graças ao seu comentário, sabemos agora a razão de sua insatisfação com nosso serviço e queremos atuar em seu caso. 
-Vamos acompanhar o seu caso internamente e manter contato com você para que possamos solucionar sua questão o mais breve possível, tá bom? 
-Um abraço e conte conosco sempre!
-Taline Santana,
-Time de Atenção ao cliente Micks`;
+var detrator = `Oi cliente, agradecemos pelo seu tempo em nos responder. Gostamos de realizar essa pesquisa para acompanhar de perto a satisfação de quem confia na gente.  
+Vi que deu uma nota de satisfação abaixo da média e de antemão pedimos desculpas por isso. Queremos melhorar a sua experiência com a gente. 
+Já vamos verificar internamente, fazer contato para entender melhor e trabalhar em uma solução de maior satisfação.  
+ 
+Mais uma vez, obrigado pelo seu retorno e vamos juntos atuar nesse caso! 
+Um forte abraço, 
+Equipe de Atenção ao Cliente Micks 
+ 
+Micks Informa: 
+Este canal é utilizado apenas para pesquisa. Para entrar em contato, utilize os canais de atendimento abaixo: 
+Telefone: (77)3451-3838 
+WhatsApp: (77)9 8802-3452`;
 
-var neutro = `Oi cliente, tudo bem?! Sou Taline, agente de atenção ao cliente da Micks. 
-Primeiramente, agradecemos pelo seu tempo em responder nossa avaliação. Realizamos essa pesquisa para acompanhar de perto a satisfação de quem confia na gente. 
-Vi que em sua nota enviou um comentário sobre sua percepção.  Gostaríamos muito de saber mais como podemos fazer para melhorar o serviço que oferecemos e aumentar a sua nota. Quaisquer informações, sugestões ou criticas será muito importante para direcionar nossas ações. 
-Queremos mudar sua satisfação para melhor e iremos atuar o mais breve possível. 
-Um abraço e conte conosco sempre!
-Time de Atenção ao cliente Micks`;
+var neutro = `Oi cliente, agradecemos pelo seu tempo em nos responder. Gostamos de realizar essa pesquisa para acompanhar de perto a satisfação de quem confia na gente.  ❤️
+Gostaríamos muito de saber mais como podemos fazer para melhorar o serviço que oferecemos e aumentar a sua nota. Quaisquer informações, sugestões ou críticas será muito importante para direcionar nossas ações.  
+Queremos mudar sua satisfação para melhor e iremos atuar o mais breve possível. 
+ 
+Um forte abraço, 
+Equipe de Atenção ao Cliente Micks 
+ 
+Micks Informa: 
+Este canal é utilizado apenas para pesquisa. Para entrar em contato, utilize os canais de atendimento abaixo: 
+Telefone: (77)3451-3838 
+WhatsApp: (77)9 8802-3452`;
 
-var promotor = `Oi cliente, tudo bem?! Sou Taline, agente de atenção ao cliente da Micks. 
-Primeiramente, agradecemos pelo seu tempo em responder nossa avaliação.  Gostamos de realizar essa pesquisa para acompanhar de perto a satisfação de quem confia na gente. 
-Ficamos muuuuuuito felizes em receber a sua nota. E olha, se desejar compartilhar com quem quer conhecer nosso trabalho, temos uma página de avaliação no Google onde você pode dizer porque gosta e confia no nosso serviço.
-Basta acessar o link abaixo e deixar seu comentário e nota por lá. 
-Só uma dica: do lado direito, abaixo da foto e dados da Micks tem a opção COMENTAR. Clique para votar. 
-https://www.google.com.br/search?client=opera&q=MICKS+TELECOM&sourceid=opera&ie=UTF-8&oe=UTF-8
+var promotor = `Oi cliente, agradecemos pelo seu tempo em nos responder. Gostamos de realizar essa pesquisa para acompanhar de perto a satisfação de quem confia na gente. 
+Ficamos muuuuuuito felizes em receber a sua nota. E olha, vamos ficar mais felizes ainda em saber o motivo da sua satisfação conosco. É um prazer ter você como nosso cliente.❤️
+Se desejar compartilhar com quem pesquisa sobre a Micks, temos uma página de avaliação no Google onde você pode dizer porque gosta e confia no nosso serviço  
+Basta acessar o link abaixo e deixar seu comentário e nota por lá.  
+  
+https://www.google.com.br/search?client=opera&q=MICKS+TELECOM&sourceid=opera&ie=UTF-8&oe=UTF-8#lrd=0x75aea642bd4254f:0x66cd72f49ff0c415,1,,, 
+ 
+Agradecemos sua confiança e conte conosco sempre que precisar! 
+ 
+Um forte abraço, 
+Equipe de Atenção ao Cliente Micks
 
-Agradecemos sua confiança e conte conosco sempre que precisar!
+Micks Informa:
+Este canal é utilizado apenas para pesquisa. Para entrar em contato, utilize os canais de atendimento abaixo:
+Telefone: (77)3451-3838
+WhatsApp: (77)9 8802-3452`;
 
-Um abraço,
-Equipe de Atenção ao cliente Micks`;
+var msg_padrao= `Micks Informa:
+Este canal é utilizado apenas para pesquisa. Para entrar em contato, utilize os canais de atendimento abaixo:
+Telefone: (77)3451-3838
+WhatsApp: (77)9 8802-3452`;
 
-var msg_padrao= "Olá Bem-Vindo a Micks. Entre em contato conosco atravez do (77)3451-3838";
-var pedir_numero_valido = "Por favor, digite um número válido. De 0 a 10.";
+var pedir_numero_valido = "Por favor, digite somente um número válido de 0 a 10.";
 
 //Formata qualquer numero de Celular para o formato (77) 91234-5678
 function formatar_celular(num){
@@ -64,7 +83,7 @@ function formatar_celular(num){
 
 function enviarPergunta(numero, texto){
     clientEnvio.sendText(numero, texto).then((result) => {
-        console.log(dataHora(),'MSG Enviada: ',texto);
+        //console.log(dataHora(),'MSG Enviada: ',texto);
     })
     .catch((erro)=>{
         console.log(dataHora(),`Erro: `, erro.status, " - ", erro.text);
@@ -110,9 +129,30 @@ function pegar_campanha(chatId){
     });
 }
 
+function numeros(num){
+    if (parseInt(num) >= 10){
+        return "10"
+    }else{
+        let formatado = num.replace(/\D+/g, "");
+        if(formatado.length === 2){
+            if(formatado[0] === '0'){
+                return formatado[1];
+            }else if(formatado === '10'){
+                return formatado;
+            }else{
+                return formatado[0];
+            }
+        }else if(formatado.length === 1){
+            return formatado;
+        }else{
+            return "Numero Invalido";
+        }
+    }
+}
+
 // Responder  Mensagem
 venom.create(
-    'Devs',
+    'NPS',
     undefined,
     (statusSession, session) => {
       console.log(dataHora(),'Status Session: ', statusSession);
@@ -133,8 +173,9 @@ venom.create(
             const existe = `SELECT * FROM pesquisa_chat WHERE idchat = '${message.chatId}';`;
             // Verifica se o número que enviou a MSG está na lista da pesquisa
             con_api.query(existe, function (erro, result, fields){
-                if (erro){ console.log(dataHora(),erro); enviarPergunta(message.from, "Desculpe, não podemos te atender"); }
-                else{ const resposta = JSON.parse(JSON.stringify(result));
+                if (erro){ console.log(dataHora(),erro); enviarPergunta(message.from, "Desculpe, não podemos te atender. Erro interno."); }
+                else{
+                     const resposta = JSON.parse(JSON.stringify(result));
 
                     // Número não participa da pesquisa, enviar mensagem padrão.
                     if(resposta.length === 0){ enviarPergunta(message.from, msg_padrao); }
@@ -143,12 +184,13 @@ venom.create(
                     else{
 
                         // Verifica se o campo resposta está preenchido
-                        
+                        let numero_extraido = numeros(message.body); // Tira as letras e deixa só numeros, caso o cliente envia por exemplo: "Bom dia! Nota 07"
+
                         // Ainda não deu a nota
                         if(resposta[0].resposta == null){
 
                             // Verifica se a resposta é válida
-                            respostasTexto.forEach((item, index)=>{ if(message.body === item){ resp_correta = true; nota = respostasTexto[index+1]; } });
+                            respostasTexto.forEach((item, index)=>{ if(numero_extraido === item){ resp_correta = true; nota = respostasTexto[index+1]; } });
 
                             // Se for uma resposta válida
                             if(resp_correta){
@@ -162,24 +204,24 @@ venom.create(
                                             console.log(dataHora(),"UPDATE ERRO: ",erro1);
                                         }
                                         else{
-                                            console.log(dataHora(),"Resposta Gravada!");
+                                            //console.log(dataHora(),"Resposta Gravada!");
     
                                             //Envia a pergunta sobre o comentario.
                                             
-                                            console.log(dataHora(),"Enviando pergunta do Comentário");
-                                            con_api.query(`UPDATE pesquisa_chat SET comentario='${comentario}' WHERE idchat='${message.chatId}'`, function (erro3, result3, fields3){
+                                            //console.log(dataHora(),"Enviando pergunta do Comentário");
+                                            con_api.query(`UPDATE pesquisa_chat SET comentario='Comentario enviado' WHERE idchat='${message.chatId}'`, function (erro3, result3, fields3){
                                                 if(erro3){
                                                     console.log(dataHora(),"UPDATE ERRO: ",erro3); }
                                                 else{
-                                                    console.log(dataHora(),"Pergunta do comentario enviada para pesquisa chat!");
+                                                    //console.log(dataHora(),"Pergunta do comentario enviada para pesquisa chat!");
                                                 }
                                             });
-                                            con_api.query(`UPDATE resultado_chat SET comentario='${comentario}' WHERE idchat='${message.chatId}'`, function (erro6, result6, fields6){
+                                            con_api.query(`UPDATE resultado_chat SET comentario='Comentario enviado' WHERE idchat='${message.chatId}'`, function (erro6, result6, fields6){
                                                 if(erro6){
                                                     console.log(dataHora(),"UPDATE ERRO: ",erro6); }
                                                 else{
                                                     enviarPergunta(message.from, comentario);
-                                                    console.log(dataHora(),"Pergunta do comentario enviada para resultado chat!");
+                                                    //console.log(dataHora(),"Pergunta do comentario enviada para resultado chat!");
                                                 }
                                             });
     
@@ -204,7 +246,7 @@ venom.create(
                                         if(erro2){
                                             console.log(dataHora(),"UPDATE ERRO: ",erro2); }
                                         else{
-                                            console.log(dataHora(),"Tentativa 1 Gravada!");
+                                            //console.log(dataHora(),"Tentativa 1 Gravada!");
                                             enviarPergunta(message.from, pedir_numero_valido);
                                         }
                                     });
@@ -218,13 +260,13 @@ venom.create(
                                             if(er){
                                                 console.log(er);
                                             }else{
-                                                console.log("Cliente Inserido na tabela nao_respondeu.");
+                                                //console.log("Cliente Inserido na tabela nao_respondeu.");
                                             }
                                             con_api.query(`UPDATE pesquisa_chat SET tentativas='2' WHERE idchat='${message.chatId}'`, function (erro5, result5, fields5){
                                                 if(erro5){
                                                     console.log(dataHora(),"UPDATE ERRO: ",erro5); }
                                                 else{
-                                                    console.log(dataHora(),"Tentativa 2 Gravada!");
+                                                    //console.log(dataHora(),"Tentativa 2 Gravada!");
                                                     enviarPergunta(message.from, agradecimento_erro);
                                                 }
                                             });
@@ -247,7 +289,7 @@ venom.create(
                                         if(erro4){
                                             console.log(dataHora(),"ERRO AO DELETAR: ",erro4); }
                                         else{
-                                            console.log(dataHora(),"Resposta do comentario recebida!");
+                                            //console.log(dataHora(),"Resposta do comentario recebida!");
                                         }
                                     });
                                     con_api.query(`UPDATE resultado_chat SET comen_resp='${message.body}', hora_come=NOW(), finalizado='sim' WHERE idchat='${message.chatId}'`, function (erro7, result7, fields7){
@@ -266,7 +308,7 @@ venom.create(
                                     });
                                 }
                                 else{
-                                    console.log(dataHora(),"Cliente ja respondeu a pesquisa");
+                                    //console.log(dataHora(),"Cliente ja respondeu a pesquisa");
                                     //enviarLocalizacao(message.from, 'Micks Telecom - Rua Camerindo Neves, 193 - Centro');
                                     //enviarLink(message.from, "https://www.youtube.com/watch?v=2UqI2Aw-OtE", "Teste link zap");
                                 }
@@ -324,7 +366,7 @@ function gravaPergunta(id_pesquisa, nome, numero1, perfil, chatId, pergunta, usu
     return new Promise((resolve ,reject)=>{
         if(sucesso == true){
             let sql = `INSERT INTO pesquisa_chat (id_pesquisa, nome, cel, perfil, idchat, pergunta, usuario) values
-            ("${id_pesquisa}", "${nome}", "${numero1}", "${perfil}", "${chatId}", "${pergunta}", "${usuario}")`;
+            ("${id_pesquisa}", "${nome}", "${numero1}", "${perfil}", "${chatId}", "pergunta_enviada", "${usuario}")`;
             con_api.query(sql, function (erro, resultado, parametros) {
                 if (erro){
                     reject(erro);
@@ -391,7 +433,7 @@ class Zap{
         var pergunta = String(req.body.pergunta);
         var sucesso1 = true;
         var sucesso2 = true;
-
+/*
         await con_api.query("TRUNCATE Table pesquisa_chat;", (er1, res1, fild1)=>{
             if(er1){
                 console.log(er1);
@@ -399,10 +441,10 @@ class Zap{
                 console.log("Tabela pesquisa_chat APAGADA");
             }
         });
-
+*/
         await numeroCadastrado(numero1).then((resp)=>{
                 if(resp == 0){
-                    console.log(dataHora(),"Novo numero. Enviando pergunta...");
+                    //console.log(dataHora(),"Novo numero. Enviando pergunta...");
                     repetido = false;
                 }else{
                     repetido = true;
@@ -434,7 +476,7 @@ class Zap{
                     if(erro){
                         console.log(erro);
                     }else{
-                        console.log(dataHora(),"Ultima_Pesquisa atualizada");
+                        //console.log(dataHora(),"Ultima_Pesquisa atualizada");
                     }
                 });
                 }).catch((error)=>{ 
@@ -451,7 +493,7 @@ class Zap{
     
             if(sucesso2 === true){
                 await gravaPergunta(id_pesquisa, nome, numero1, perfil, chatId, pergunta, usuario).then(()=>{
-                    console.log(dataHora(),'Enviado e Gravado com sucesso');
+                    //console.log(dataHora(),'Enviado e Gravado com sucesso');
                         return res.status(200).json({
                             error: "nao",
                             code: 200,
@@ -488,7 +530,7 @@ class Zap{
         const numero = String("55" + req.body.numero + "@c.us");
         const chat = await clientEnvio.checkNumberStatus(numero)
         .then((result) => {
-            console.log(dataHora(),"WhatsApp OK ", req.body.numero);
+            //console.log(dataHora(),"WhatsApp OK ", req.body.numero);
             return res.status(200).json({
                 error: "nao",
                 code: result.status,
@@ -584,10 +626,10 @@ class Zap{
         }
 
         const numero = String("55" + n + "@c.us");
-        console.log(dataHora(), "Obtendo Profile: ", numero);
+        //console.log(dataHora(), "Obtendo Profile: ", numero);
         await clientEnvio.getProfilePicFromServer(numero)
         .then((result) => {
-            console.log(dataHora(),"Link do Profile: ", result);
+            //console.log(dataHora(),"Link do Profile: ", result);
             return res.status(200).json({
                 error: "nao",
                 foto: result
@@ -600,7 +642,6 @@ class Zap{
             });
         });
     }
-
 
     //Login na Página
     async login(req, res) {
@@ -629,7 +670,7 @@ class Zap{
                         msg: "Usuário ou senha inválidos"
                     });
                 }else if(resposta.length === 1){
-                    console.log(dataHora(),"Usuário OK");
+                    //console.log(dataHora(),"Usuário OK");
                     return res.status(200).json({
                         error: 'nao',
                         code: 200,
@@ -696,7 +737,7 @@ class Zap{
     }
 
     async listar_perguntas(req, res){
-        console.log(dataHora(),"Listando Perguntas");
+        //console.log(dataHora(),"Listando Perguntas");
         const sql = "SELECT *, DATE_FORMAT(hora, '%d/%m/%Y %H:%i') as data_hora  FROM perguntas;";
         await con_api.query(sql, function (err, result, fields) {
             if (err){
@@ -708,7 +749,7 @@ class Zap{
                     err: err
                 });
             }else{
-                console.log(dataHora(),'Sucesso ao listar Perguntas');
+                //console.log(dataHora(),'Sucesso ao listar Perguntas');
                 const resposta = JSON.parse(JSON.stringify(result));
                 return res.status(200).json({
                     error: "nao",
@@ -748,7 +789,7 @@ class Zap{
 
     //Pesquisa
     async listar_pesquisas(req, res){
-        console.log(dataHora(),"Listando Pesquisas");
+        //console.log(dataHora(),"Listando Pesquisas");
         const sql = "SELECT *, DATE_FORMAT(hora, '%d/%m/%Y %H:%i') as data_hora  FROM pesquisas_enviadas;";
         await con_api.query(sql, function (err, result, fields) {
             if (err){
@@ -760,7 +801,7 @@ class Zap{
                     err: err
                 });
             }else{
-                console.log(dataHora(),'Sucesso ao listar pesquisas');
+                //console.log(dataHora(),'Sucesso ao listar pesquisas');
                 const resposta = JSON.parse(JSON.stringify(result));
                 return res.status(200).json({
                     error: "nao",
@@ -774,7 +815,7 @@ class Zap{
 
     //Pegar perfis
     async pegar_perfis(req, res){
-        console.log(dataHora(),"Listando Perfis");
+        //console.log(dataHora(),"Listando Perfis");
         const sql = "SELECT * FROM perfis ORDER BY perfil;";
         await con_api.query(sql, function (err, result, fields) {
             if (err){
@@ -786,7 +827,7 @@ class Zap{
                     err: err
                 });
             }else{
-                console.log(dataHora(),'Sucesso ao listar Perfis');
+                //console.log(dataHora(),'Sucesso ao listar Perfis');
                 const resposta = JSON.parse(JSON.stringify(result));
                 return res.status(200).json({
                     error: "nao",
@@ -894,7 +935,7 @@ class Zap{
         let inicio = req.body.inicio;
         let fim = req.body.fim;
         let dias = req.body.dias;
-        console.log(dataHora(),"Listando Clientes por Data de Venda");
+        //console.log(dataHora(),"Listando Clientes por Data de Venda");
 
         const sql1 = `SELECT * FROM clientes WHERE
                         zap_valido='sim'
@@ -912,7 +953,7 @@ class Zap{
                     err: err
                 });
             }else{
-                console.log(dataHora(),'Sucesso ao listar Clientes por Data de Venda');
+                //console.log(dataHora(),'Sucesso ao listar Clientes por Data de Venda');
                 const resposta = JSON.parse(JSON.stringify(result));
                 return res.status(200).json({
                     error: "nao",
@@ -1023,7 +1064,7 @@ class Zap{
 
     //Listar Clientes
     async listar_clientes(req, res){
-        console.log(dataHora(),"Listando Clientes");
+        //console.log(dataHora(),"Listando Clientes");
         const sql = req.body.sql;
         await con_api.query(sql, function (err, result, fields) {
             if (err){
@@ -1035,7 +1076,7 @@ class Zap{
                     err: err
                 });
             }else{
-                console.log(dataHora(),'Sucesso ao listar Clientes');
+                //console.log(dataHora(),'Sucesso ao listar Clientes');
                 const resposta = JSON.parse(JSON.stringify(result));
                 return res.status(200).json({
                     error: "nao",
@@ -1131,7 +1172,7 @@ class Zap{
     //Verificar se o número existe na Tabela Clientes
     async existe_numero(req, res){
         const cel = req.body.numero;
-        console.log(dataHora(),"Verificando Numero");
+        //console.log(dataHora(),"Verificando Numero");
         const sql = `SELECT * FROM clientes WHERE cel='${cel}';`;
         await con_api.query(sql, function (err, result, fields) {
             if (err){
@@ -1143,7 +1184,7 @@ class Zap{
                     err: err
                 });
             }else{
-                console.log(dataHora(),'Sucesso ao verificar número na tabela');
+                //console.log(dataHora(),'Sucesso ao verificar número na tabela');
                 const resposta = JSON.parse(JSON.stringify(result));
                 return res.status(200).json({
                     error: "nao",

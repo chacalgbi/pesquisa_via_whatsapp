@@ -7,7 +7,7 @@ const routes = new Router();
 
 //Middlewares
 function validarLogin(req, res, next){
-    console.log(dataHora(),"Validando Login");
+    //console.log(dataHora(),"Validando Login");
     const usuario = req.body.usuario;
     const senha = req.body.senha;
     const sql = `SELECT usuario , senha FROM usuarios  WHERE usuario = '${usuario}' AND senha = '${senha}';`
@@ -32,7 +32,7 @@ function validarLogin(req, res, next){
                     msg: "Usuário ou senha inválidos"
                 });
             }else if(resposta.length === 1){
-                console.log(dataHora(),"Login OK");
+                //console.log(dataHora(),"Login OK");
                 next();
             }
 
@@ -42,12 +42,12 @@ function validarLogin(req, res, next){
 }
 
 //Pesquisa
-routes.post('/enviar', validarLogin, Zap.enviarMsg);
-routes.post('/online', validarLogin, Zap.online);
-routes.post('/existe', validarLogin, Zap.existe);
-routes.post('/link',   validarLogin, Zap.link);
-routes.post('/local',  validarLogin, Zap.localizacao);
-routes.post('/profile', validarLogin, Zap.profile);
+routes.post('/enviar',  Zap.enviarMsg);
+routes.post('/online',  Zap.online);
+routes.post('/existe',  Zap.existe);
+routes.post('/link',    Zap.link);
+routes.post('/local',   Zap.localizacao);
+routes.post('/profile', Zap.profile);
 
 //FrontEnd Perguntas
 routes.post('/cadastrar_pergunta', validarLogin, Zap.cadastrar_pergunta);
