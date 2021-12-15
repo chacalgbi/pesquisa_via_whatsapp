@@ -1,4 +1,5 @@
 sessionStorage.ip = 'http://localhost:3366/';
+localStorage.setItem("server", "http://localhost:3366/");
 //sessionStorage.ip = 'http://172.17.1.163:3366/';
 
 

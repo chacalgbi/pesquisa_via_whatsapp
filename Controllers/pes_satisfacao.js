@@ -139,8 +139,10 @@ function numeros(num){
                 return formatado[1];
             }else if(formatado === '10'){
                 return formatado;
+            }else if (parseInt(formatado) > 10){
+                return "10"
             }else{
-                return formatado[0];
+                return "Indeterminado";
             }
         }else if(formatado.length === 1){
             return formatado;
@@ -167,24 +169,32 @@ venom.create(
         clientEnvio = client;
         resp_correta = false;
         nota = 0;
-        if (message.isGroupMsg === false) {
+
+        //console.log("TESTE:",message.body, message.chatId);
+
+        if (message.isGroupMsg === false && message.body != undefined) {
             console.log(dataHora(),"Mensagem Recebida: ",message.body);
 
             const existe = `SELECT * FROM pesquisa_chat WHERE idchat = '${message.chatId}';`;
             // Verifica se o número que enviou a MSG está na lista da pesquisa
             con_api.query(existe, function (erro, result, fields){
-                if (erro){ console.log(dataHora(),erro); enviarPergunta(message.from, "Desculpe, não podemos te atender. Erro interno."); }
+                if (erro){ 
+                    console.log(dataHora(),erro);
+                    enviarPergunta(message.from, "Desculpe, não podemos te atender. Erro interno.");
+                }
                 else{
                      const resposta = JSON.parse(JSON.stringify(result));
 
                     // Número não participa da pesquisa, enviar mensagem padrão.
-                    if(resposta.length === 0){ enviarPergunta(message.from, msg_padrao); }
+                    if(resposta.length === 0){ 
+                        enviarPergunta(message.from, msg_padrao);
+                    }
                     
                     // Número participa da pesquisa.
                     else{
 
-                        // Verifica se o campo resposta está preenchido
-                        let numero_extraido = numeros(message.body); // Tira as letras e deixa só numeros, caso o cliente envia por exemplo: "Bom dia! Nota 07"
+                        // Tira as letras e deixa só numeros, caso o cliente envia por exemplo: "Bom dia! Nota 07"
+                        let numero_extraido = numeros(message.body);
 
                         // Ainda não deu a nota
                         if(resposta[0].resposta == null){
@@ -262,7 +272,7 @@ venom.create(
                                             }else{
                                                 //console.log("Cliente Inserido na tabela nao_respondeu.");
                                             }
-                                            con_api.query(`UPDATE pesquisa_chat SET tentativas='2' WHERE idchat='${message.chatId}'`, function (erro5, result5, fields5){
+                                            con_api.query(`DELETE FROM pesquisa_chat WHERE idchat='${message.chatId}'`, function (erro5, result5, fields5){
                                                 if(erro5){
                                                     console.log(dataHora(),"UPDATE ERRO: ",erro5); }
                                                 else{
@@ -317,10 +327,12 @@ venom.create(
                     }
                 }
             });
+        }else{
+            enviarPergunta(message.from, "Caro Cliente: não consigo compreender áudio ou figurinhas. ;)");
         }
     });
 })
-.catch((erro) => { console.log(dataHora(),erro); });
+.catch((erro) => { console.log(dataHora(),"VENOM", erro); });
 
 //Pesquisa se o número já existe, ou seja, já enviou a pesquisa para esse numero.
 function numeroCadastrado(numero){

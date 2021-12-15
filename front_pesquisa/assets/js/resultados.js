@@ -34,7 +34,8 @@ $(document).ready(function() {
         document.getElementById('corpo').innerHTML = table;
 
         $('#tabela').DataTable(
-          { 
+          {
+            paging: false,
           "language": { 
             "sEmptyTable": "Nenhum registro encontrado", 
             "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros", 

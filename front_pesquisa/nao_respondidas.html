@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!-- Designined by CodingLab | www.youtube.com/codinglabyt -->
+<html lang="pt-br">
+  <head>
+      <!-- Não indexa página-->
+      <meta name="robots" content="noindex">
+      <meta charset="UTF-8">
+      <title>Lista de Clientes que não responderam</title>
+      <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon/micks-favico-32x32-1.png">
+      <link rel="stylesheet" href="assets/css/style-menu.css">
+      <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+      <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css" rel="stylesheet">
+      <link href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script src="./assets/pace.js"></script>
+      <link rel="stylesheet" href="radar.css">
+
+      <script src="./table/jquery-3.5.1.js"></script>
+      <script src="./table/jquery.dataTables.min.js"></script>
+      <script src="./table/dataTables.buttons.min.js"></script>
+      <script src="./table/jszip.min.js"></script>
+      <script src="./table/pdfmake.min.js"></script>
+      <script src="./table/vfs_fonts.js"></script>
+      <script src="./table/buttons.html5.min.js"></script>
+      <script src="./table/buttons.print.min.js"></script>
+
+      
+      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+<body>
+    <div class="container-fluid">
+        <h1 class="h3 mb-2 text-gray-800" id="msg"><i class='bx bxl-telegram'></i> Não responderam a pesquisa</h1>
+        <div class="card shadow mb-4">
+            <div class="row">
+                <div class="col-sm-6">
+                    <select class="form-control" id="selecionar_dias" onchange="selec_dias(this.value)">
+                        <option selected disabled>Listar clientes que não responderam a pesquisa com mais de X dias</option>
+                        <option value="2" >02 Dias</option>
+                        <option value="5" >05 Dias</option>
+                        <option value="10">10 Dias</option>
+                        <option value="15">15 Dias</option>
+                        <option value="20">20 Dias</option>
+                        <option value="30">30 Dias</option>
+                        <option value="40">40 Dias</option>
+                        <option value="50">50 Dias</option>
+                        <option value="60">60 Dias</option>
+                        <option value="70">70 Dias</option>
+                        <option value="80">80 Dias</option>
+                        <option value="90">90 Dias</option>
+                    </select>
+                </div>
+                <div class="col-sm-5">
+                    <select class="form-control" id="selecionar_dias" onchange="selec_modo(this.value)">
+                        <option selected disabled>Tipo de Seleção</option>
+                        <option value="0">Quem respondeu a NOTA e não respondeu COMENTÁRIO</option>
+                        <option value="1">Quem não respondeu a NOTA e o COMENTÁRIO</option>
+                        <option value="2">Ambos</option>
+                    </select>
+                </div>
+            </div>
+            <br/>
+            <table id="tabela" class="table table-hover">
+                <thead style="font-size: 15px;">
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Celular</th>
+                    <th scope="col">Perfil</th>
+                    <th scope="col">Nota</th>
+                    <th scope="col">Comentário</th>
+                    <th scope="col">Data Envio</th>
+                    <th scope="col">Campanha</th>
+                    </tr>
+                </thead>
+                <tbody id="corpo" style="font-size: 13px;">
+                </tbody>
+            </table>
+        </div>
+    </div>
+  <script src="assets/js/data_tables.js"></script>
+  <script>
+    var login = sessionStorage.login;
+    var ip = localStorage.getItem("server");
+
+    function formatar_celular(num){
+        let formatado = num.replace(/\D+/g, "");
+        let final = '';
+        if(formatado.length == 11){
+            final = formatado.replace(/(\d{2})?(\d{5})?(\d{4})/, "($1) $2-$3");
+        }else if(formatado.length == 10){
+            final = formatado.replace(/(\d{2})?(\d{4})?(\d{4})/, "($1) 9$2-$3");
+        }else if(formatado.length ==  9){
+            final = formatado.replace(/(\d{5})?(\d{4})/, "(77) $1-$2");
+        }else if(formatado.length ==  8){
+            final = formatado.replace(/(\d{4})?(\d{4})/, "(77) 9$1-$2");
+        }else{
+            final = "erro";
+        }
+        return final;
+    }
+
+    function selec_dias(dias){
+        sessionStorage.dias = dias;
+    }
+
+    function selec_modo(modo){
+        sessionStorage.modo = modo;
+        location.replace("nao_respondidas.html");
+    }
+
+    function listar_clientes_sem_resposta(){
+        let filtro = sessionStorage.modo;
+        let dias_passados = sessionStorage.dias;
+        let sql = ``;
+        if(filtro == '0'){
+            sql = `SELECT *, DATEDIFF(NOW(),hora_perg) AS dias, DATE_FORMAT(hora_perg, '%d/%m/%Y %H:%i') as hora FROM 
+            pesquisa_chat WHERE DATEDIFF(NOW(),hora_perg) >= ${dias_passados} AND resposta IS NOT NULL AND comen_resp IS NULL;`;
+        }else if(filtro == '1'){
+            sql = `SELECT *, DATEDIFF(NOW(),hora_perg) AS dias, DATE_FORMAT(hora_perg, '%d/%m/%Y %H:%i') as hora FROM 
+            pesquisa_chat WHERE DATEDIFF(NOW(),hora_perg) >= ${dias_passados} AND resposta IS NULL  AND comen_resp IS NULL;`;
+        }else if(filtro == '2'){
+            sql = `SELECT *, DATEDIFF(NOW(),hora_perg) AS dias, DATE_FORMAT(hora_perg, '%d/%m/%Y %H:%i') as hora FROM pesquisa_chat WHERE DATEDIFF(NOW(),hora_perg) >= ${dias_passados};`;
+        }
+        
+        
+        axios.post(`${ip}listar_clientes`, { sql: sql })
+        .then( function (response) {
+            var table = "";
+            console.log(response.data.resposta);
+            for (const [index, cliente] of response.data.resposta.entries()) {
+                table += `<tr>
+                    <td>${index + 1}</td>
+                    <td>${cliente.nome}</td>
+                    <td>${formatar_celular(cliente.cel)}</td>
+                    <td>${cliente.perfil}</td>
+                    <td>${cliente.resposta}</td>
+                    <td>${cliente.comen_resp}</td>
+                    <td>${cliente.hora}</td>
+                    <td>${cliente.campanha}</td>
+                </tr>`;
+            }
+            document.getElementById('corpo').innerHTML = '';
+            document.getElementById('corpo').innerHTML = table;
+
+            $('#tabela').DataTable(
+            {
+            paging: false,
+            "language": { 
+                "sEmptyTable": "Nenhum registro encontrado", 
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros", 
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros", 
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)", 
+                "sInfoPostFix": "", 
+                "sInfoThousands": ".", 
+                "sLengthMenu": "Mostrando _MENU_ resultados por página", 
+                "sLoadingRecords": "Carregando...", 
+                "sProcessing": "Processando...", 
+                "sZeroRecords": "Nenhum registro encontrado", 
+                "sSearch": "Pesquisar", 
+                "oPaginate": { 
+                    "sNext": "Próximo", 
+                    "sPrevious": "Anterior", 
+                    "sFirst": "Primeiro", 
+                    "sLast": "Último" 
+                }, 
+                "oAria": { 
+                    "sSortAscending": ": Ordenar colunas de forma ascendente", 
+                    "sSortDescending": ": Ordenar colunas de forma descendente" 
+                }, 
+                "select": { 
+                    "rows": { 
+                        "_": "Selecionado %d linhas", 
+                        "0": "Nenhuma linha selecionada", 
+                        "1": "Selecionado 1 linha" 
+                    } 
+                }, 
+                "buttons": { 
+                    "copy": "Copiar", 
+                    "copyTitle": "Cópia bem sucedida", 
+                    "copySuccess": { 
+                        "1": "Uma linha copiada com sucesso", 
+                        "_": "%d linhas copiadas com sucesso" 
+                    } 
+                } 
+            }, 
+            responsive: "true", 
+            dom: 'Bfrtip',
+                buttons: [
+                    { 
+                        extend:    'print', 
+                        text:      '<i class="fa fa-print"></i> ', 
+                        titleAttr: 'Imprimir', 
+                        className: 'btn btn-info' 
+                    }, 
+                    { 
+                        extend:    'excelHtml5', 
+                        text:      '<i class="fa fa-file-excel"></i>', 
+                        titleAttr: 'Excel', 
+                        className: 'btn btn-success' 
+                    }, 
+                    { 
+                        extend:    'pdfHtml5', 
+                        text:      '<i class="fas fa-file-pdf"></i>', 
+                        titleAttr: 'PDF', 
+                        className: 'btn btn-danger' 
+                    } 
+                ] 
+            });
+        })
+        .catch(function (error)
+        {
+            console.log(error);
+        });
+    }
+
+    listar_clientes_sem_resposta();
+  </script>
+</body>
+</html>

@@ -70,7 +70,7 @@ routes.post('/datas', validarLogin, Zap.datas);
 routes.post('/cadastrar_cliente',  validarLogin, Zap.cadastrar_cliente);
 routes.post('/editar_cliente',     validarLogin, Zap.editar_cliente);
 routes.post('/deletar_cliente',    validarLogin, Zap.deletar_cliente);
-routes.post('/listar_clientes',    validarLogin, Zap.listar_clientes);
+routes.post('/listar_clientes',    Zap.listar_clientes);
 routes.post('/listar_periodo',     validarLogin, Zap.listar_periodo);
 routes.post('/listar_ids',         validarLogin, Zap.listar_ids);
 routes.post('/existe_numero',      validarLogin, Zap.existe_numero);

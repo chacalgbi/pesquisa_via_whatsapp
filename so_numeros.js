@@ -36,7 +36,7 @@ async function usar(){
     }
 }
 
-usar();
+//usar();
 
 /*
 console.log(numeros("A nota para a micks é 07"));
@@ -48,5 +48,10 @@ console.log(numeros("45"));
 console.log(numeros("r=7"));
 console.log(numeros("R=7"));
 console.log(numeros("Resposta = 7"));
-console.log(numeros("Boa tarde"));
 */
+
+let texto = `Bom Dia\n08`;
+
+console.log(texto);
+
+console.log(numeros(texto));
