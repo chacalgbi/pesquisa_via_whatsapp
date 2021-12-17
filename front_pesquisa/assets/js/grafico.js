@@ -33,14 +33,13 @@ function grafico(dados, rotulo){
 
   if(Grafico){Grafico.destroy();}
 
-  const labels = ['Total Respostas', 'Média Geral', 'Nota 0', 'Nota 1', 'Nota 2', 'Nota 3', 'Nota 4', 'Nota 5', 'Nota 6', 'Nota 7', 'Nota 8', 'Nota 9', 'Nota 10'];
+  const labels = ['Média Geral', 'Nota 0', 'Nota 1', 'Nota 2', 'Nota 3', 'Nota 4', 'Nota 5', 'Nota 6', 'Nota 7', 'Nota 8', 'Nota 9', 'Nota 10'];
   const data = {
     labels: labels,
     datasets: [{
       label: rotulo,
       data: dados,
       backgroundColor: [
-        'rgba(222,184,135, 0.2)',
         'rgba(105,105,105, 1)',
         'rgba(75, 192, 192, 0.2)',
         'rgba(54, 162, 235, 0.2)',
@@ -55,7 +54,6 @@ function grafico(dados, rotulo){
         'rgba(0, 250, 154, 0.2)'
       ],
       borderColor: [
-        'rgba(210,105,30, 1)',
         'rgba(54, 162, 235, 1)',
         'rgba(75, 192, 192, 0.2)',
         'rgba(54, 162, 235, 1)',
@@ -133,7 +131,7 @@ function listar_pesquisas(item){
     }else{
       let dados = [];
       let rotulo = valores[1];
-      dados.push(response.data.resposta.length);
+      document.getElementById('msg').innerHTML = `<i class='bx bx-line-chart'></i> Gráfico: Total Respostas: ${response.data.resposta.length}`;
       let zero = 0;
       let um = 0;
       let dois = 0;

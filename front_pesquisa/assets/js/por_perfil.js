@@ -188,12 +188,21 @@ function enviando_pesquisa(item){
 
 }
 
+function tempo_entre_envios(){
+  return new Promise((resolve, reject)=>{
+      setTimeout(()=>{ 
+              resolve("OK");
+      }, 10000);
+  });
+}
+
 async function getTodos() {
   for (const [index, cliente] of listaClientes.entries()) {
       const resposta = await enviando_pesquisa(cliente);
       console.log(`${index+1} Enviados: `, resposta.data.msg, " - ", cliente);
       let parcial = parseInt((100 * (index+1)) / num_pesquisas);
       $('#progress_parcial').css('width', parcial+'%').attr('aria-valuenow', parcial).html(`${parcial}%`);
+      await tempo_entre_envios(); // Aguardar 10 segundos!
   }
 
   Swal.fire({

@@ -35,20 +35,18 @@ function grafico(dados, rotulo){
 
   if(Grafico){Grafico.destroy();}
 
-  const labels = ['Total Respostas', 'Promotor', 'Detrator', 'Score NPS'];
+  const labels = ['Promotor', 'Detrator', 'Score NPS'];
   const data = {
     labels: labels,
     datasets: [{
       label: rotulo,
       data: dados,
       backgroundColor: [
-        'rgba(128, 128, 128, 0.8)',
         'rgba(50, 205, 50, 0.8)',  // Promotor
         'rgba(255, 0, 0, 0.8)',  // Detrator
         'rgba(0, 0, 255, 0.8)' // Score NPS
       ],
       borderColor: [
-        'rgba(0, 0, 0, 1)',
         'rgb(0, 255, 0, 1)',   // Promotor
         'rgb(255, 0, 0, 1)',   // Detrator
         'rgb(0, 0, 128, 1)'    // Score NPS
@@ -119,7 +117,7 @@ function listar_pesquisas(item){
     }else{
       let dados = [];
       let rotulo = valores[1];
-      dados.push(response.data.resposta.length);
+      document.getElementById('msg').innerHTML = `<i class='bx bx-line-chart'></i> Gráfico NPS: Respostas: ${response.data.resposta.length}`;
       let zero = 0;
       let um = 0;
       let dois = 0;

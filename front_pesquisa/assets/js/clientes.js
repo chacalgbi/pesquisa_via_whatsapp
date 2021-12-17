@@ -123,7 +123,7 @@ function validarWhatsAppEdit(item){
     senha: sessionStorage.senha,
     numero: formatado
   }).then(function (response) {
-    if(response.data.pode_receber_mensagens){
+    if(response.data.msg === 'WhatsApp OK'){
       $("#editar_celular").notify(
         `Este número: ${item}, é um WhatsApp VÁLIDO!`,
         { 

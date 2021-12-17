@@ -647,7 +647,7 @@ class Zap{
                 foto: result
             });
         }).catch((erro) => {
-            console.log(dataHora(), erro);
+            console.log(dataHora(), "Foto Indisponível");
             return res.status(200).json({
                 error: "sim",
                 code: erro

@@ -1,8 +1,6 @@
 <!DOCTYPE html>
-<!-- Designined by CodingLab | www.youtube.com/codinglabyt -->
 <html lang="pt-br">
   <head>
-      <!-- Não indexa página-->
       <meta name="robots" content="noindex">
       <meta charset="UTF-8">
       <title>Lista de Clientes que não responderam</title>
@@ -28,12 +26,12 @@
       <script src="./table/buttons.html5.min.js"></script>
       <script src="./table/buttons.print.min.js"></script>
 
-      
       <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
 <body>
     <div class="container-fluid">
+        <br/>
         <h1 class="h3 mb-2 text-gray-800" id="msg"><i class='bx bxl-telegram'></i> Não responderam a pesquisa</h1>
         <div class="card shadow mb-4">
             <div class="row">
@@ -64,6 +62,14 @@
                 </div>
             </div>
             <br/>
+            <div class="row">
+                <div class="col-sm-5"></div>
+                <div class="col-sm-5"></div>
+                <div class="col-sm-2">
+                    <button type="button" onclick="apagar_clientes()" id="apagar_clientes" class="btn btn-danger" style="display: none;">Apagar clientes  <i class='bx bx-message-square-x' ></i></button></br>
+                </div>
+            </div>
+            <br/>
             <table id="tabela" class="table table-hover">
                 <thead style="font-size: 15px;">
                     <tr>
@@ -86,6 +92,61 @@
   <script>
     var login = sessionStorage.login;
     var ip = localStorage.getItem("server");
+    var qtd = 0;
+
+    function apagar_clientes(){
+        Swal.fire({
+            title: `${localStorage.getItem("user")}, tem certeza?`,
+            text: `Deseja apagar ${qtd} clientes?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, Desejo!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deletar();
+            }
+        })
+    }
+
+    function deletar(){
+        let filtro = sessionStorage.modo;
+        let dias_passados = sessionStorage.dias;
+        let sql = ``;
+        if(filtro == '0'){
+            sql = `DELETE FROM pesquisa_chat WHERE DATEDIFF(NOW(),hora_perg) >= ${dias_passados} 
+            AND resposta IS NOT NULL AND comen_resp IS NULL;`;
+        }else if(filtro == '1'){
+            sql = `DELETE FROM pesquisa_chat WHERE DATEDIFF(NOW(),hora_perg) >= ${dias_passados} 
+            AND resposta IS NULL AND comen_resp IS NULL;`;
+        }else if(filtro == '2'){
+            sql = `DELETE FROM pesquisa_chat WHERE DATEDIFF(NOW(),hora_perg) >= ${dias_passados};`;
+        }
+        
+        axios.post(`${ip}listar_clientes`, { sql: sql }).then( function (response) {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Clientes apagados!',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            setTimeout(function() { location.replace("nao_respondidas.html"); }, 3000);
+
+        }).catch(function (error){
+            console.log(error);
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: 'Erro ao apagar clientes!',
+                showConfirmButton: true,
+                timer: 3000
+            });
+        });
+        
+    }
 
     function formatar_celular(num){
         let formatado = num.replace(/\D+/g, "");
@@ -131,7 +192,12 @@
         axios.post(`${ip}listar_clientes`, { sql: sql })
         .then( function (response) {
             var table = "";
-            console.log(response.data.resposta);
+            //console.log(response.data.resposta);
+            qtd = response.data.resposta.length;
+            if(response.data.resposta.length > 1){
+                document.getElementById('apagar_clientes').style.display = "block";
+            }
+
             for (const [index, cliente] of response.data.resposta.entries()) {
                 table += `<tr>
                     <td>${index + 1}</td>

@@ -26,7 +26,8 @@ function login(){
                 $.notify(`Bem-Vindo ${login}`, "success");
                 sessionStorage.usuario = login; 
                 sessionStorage.senha = senha; 
-                sessionStorage.login = 'OK';       
+                sessionStorage.login = 'OK';
+                localStorage.setItem("user", login);    
                 document.getElementById('msg').innerHTML = response.data.msg;
                 setTimeout(function() { // delay de 1 segundo
                     location.replace("lista.html");

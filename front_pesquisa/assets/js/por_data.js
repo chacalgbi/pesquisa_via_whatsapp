@@ -200,6 +200,14 @@ function pegar_ultima_pesquisa(){
 
 }
 
+function tempo_entre_envios(){
+  return new Promise((resolve, reject)=>{
+      setTimeout(()=>{ 
+              resolve("OK");
+      }, 10000);
+  });
+}
+
 //7
 async function getTodos() {
   for (const [index, cliente] of listaClientes.entries()) {
@@ -207,6 +215,7 @@ async function getTodos() {
       console.log(`${index+1} Enviado: `, cliente);
       let parcial = parseInt((100 * (index+1)) / num_pesquisas);
       $('#progress_parcial').css('width', parcial+'%').attr('aria-valuenow', parcial).html(`${parcial}%`);
+      await tempo_entre_envios(); // Aguardar 10 segundos!
   }
 
   Swal.fire({
